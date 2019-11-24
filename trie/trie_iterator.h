@@ -42,6 +42,7 @@ public:
 template <class T> 
 class TrieIterator
 {
+
 	typedef std::pair<std::string, T&> value_type;// typedef T value_type;
 	
 	template <typename>
@@ -117,16 +118,21 @@ public:
 	bool operator!=(const TrieIterator& rhs) const { return !(this->data == rhs.data); };
 
 	value_type operator*() { 
-		iter_value.first = search_str;
-		iter_value.second = (this->data)->value;
+		init_iter_value();
 		return iter_value;//return (this->data)->value; 
 	
 	};//{ return std::pair<std::string, T&> p(search_str, (this->data)->value); };
-	value_type * operator->() { return &((this->p)->value); }; /*€ не могу возвращать указатель 
-															   на локально созданную в теле метода пару, она ведь 
-															   разрушитс€. Ќа куче создавать, непон€тно, кто будет удал€ть
-															   потом. ѕоэтому делаем поле класса - пару. Ќо ссылку T& нужно проинициализировать,
-															   поэтому отдальное поле T default{}, на который ссылку даЄм*/
+	value_type * operator->() { 
+		init_iter_value();
+		return &iter_value;
+		//return &((this->p)->value); 
+	
+	
+	}; /*€ не могу возвращать указатель 
+		на локально созданную в теле метода пару, она ведь 
+		разрушитс€. Ќа куче создавать, непон€тно, кто будет удал€ть
+		потом. ѕоэтому делаем поле класса - пару. Ќо ссылку T& нужно проинициализировать,
+		поэтому отдальное поле T default{}, на который ссылку даЄм*/
 
 
 private:
@@ -142,5 +148,13 @@ private:
 		it->data = nullptr;
 		it->search_str.clear();
 		it->symbol = search_str.rend();
+	}
+
+	void init_iter_value() {
+		iter_value.first = search_str;
+		if (this->data != nullptr)
+			iter_value.second = (this->data)->value;
+		else
+			iter_value.second = T{};
 	}
 };

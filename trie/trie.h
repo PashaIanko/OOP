@@ -10,9 +10,6 @@
 #include <stdexcept>
 
 
-
-
-
 template <class T = int>
 class Trie {
 public:
@@ -48,7 +45,12 @@ public:
 		root = new SubTrie<T>(*trie.root);
 	};
 
-	~Trie() = default;
+	~Trie() {
+		if (this->root != nullptr) {
+			this->root->clear();
+			delete root;
+		}
+	};
 
 	Trie<T> & operator= (const Trie<T> & trie) {
 		if (this != &trie) {
@@ -71,9 +73,7 @@ public:
 			node = pair.second;
 			symb = pair.first;
 			if (node->is_word_end()) {
-				//char first_symb = pair.first;
 				search_str += symb;
-				//search_str(1, first_symb);
 				return iterator(search_str, pair.second);
 			}
 			first_node = node;
@@ -82,15 +82,6 @@ public:
 		}
 		iterator it;
 		return it;
-
-		/*char symbol = NON_INITIALIZED;
-		std::string search_str; //internal field of iterator
-		while (first_node->children.size()) {
-			symbol = ((first_node->children).cbegin())->first;
-			search_str += symbol;
-			first_node = ((first_node->children).cbegin())->second;
-		}
-		return iterator(search_str, first_node);*/
 	};
 
 	const_iterator cbegin() const {
@@ -156,7 +147,8 @@ public:
 
 	//удаление
 	void erase(iterator position) {
-		
+		SubTrie<T>* temp = position.data;
+		internal_erase(temp, position.search_str);
 	};
 
 
@@ -176,23 +168,7 @@ public:
 				return 0; /*the word is not found - why size_t in the interface?*/
 			}
 		}
-		if (temp->is_end_of_word) {
-			if (!temp->children.empty()) {
-				temp->is_end_of_word = false;
-			}
-			else {
-				//std::string::const_iterator key_it;
-				for (auto c = k.crbegin(); c != k.crend(); ++c) {// (auto key_it = k.cbegin(); key_it != k.cend(); ++key_it) {
-					temp = internal_delete(temp, *c);
-					if (!temp || temp->is_end_of_word) { /*internal delete returns nullptr
-							   when after deleting children map is not empty(can't
-							   delete further)*/
-						break;
-					}
-				}
-			}
-		}
-		trie_size--;
+		internal_erase(temp, k);
 		return trie_size;
 	};
 	void erase(iterator first, iterator last);
@@ -226,7 +202,7 @@ public:
 			}
 		}
 		if (temp->is_end_of_word /*true - end_of_word*/) {
-			return iterator(temp);
+			return iterator(k, temp);
 		}
 		else {
 			return end();
@@ -258,9 +234,31 @@ private:
 	size_t trie_size;
 
 	SubTrie<T>* internal_delete(SubTrie<T>* ptr, const char ch);
+	void internal_erase(SubTrie<T>* ptr, const key_type& k);
 };
 
-
+template<class T>
+void Trie<T>::internal_erase(SubTrie<T>* temp, const key_type& k) {
+	if (temp == nullptr)
+		return;
+	if (temp->is_end_of_word) {
+		if (!temp->children.empty()) {
+			temp->is_end_of_word = false;
+		}
+		else {
+			//std::string::const_iterator key_it;
+			for (auto c = k.crbegin(); c != k.crend(); ++c) {// (auto key_it = k.cbegin(); key_it != k.cend(); ++key_it) {
+				temp = internal_delete(temp, *c);
+				if (!temp || temp->is_end_of_word) { /*internal delete returns nullptr
+						   when after deleting children map is not empty(can't
+						   delete further)*/
+					break;
+				}
+			}
+		}
+	}
+	trie_size--;
+}
 
 template<class T>
 SubTrie<T>* Trie<T>::internal_delete(SubTrie<T>* st_ptr, const char ch) {
