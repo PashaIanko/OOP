@@ -1,49 +1,4 @@
 #pragma once
-
-/*class GraphIterator;
-
-class Graph {
-
-public:
-	virtual GraphIterator cbegin() const = 0;
-};
-
-class TraverseStrategy {
-public:
-	virtual ~TraverseStrategy() = 0;
-
-	virtual void traverse(const Graph& g) = 0;
-
-};
-
-class DFSStrategy :public TraverseStrategy {
-public:
-	virtual ~DFSStrategy() {};
-	void traverse(const Graph &g) override {
-		dfs(g.cbegin());
-	};
-
-private:
-	void dfs(const GraphIterator& iterator) {
-		if (iterator.get_visited() == false) {
-			iterator.set_visited(true);
-			for (auto it : iterator.neighbours) {
-				dfs(it);
-			}
-		}
-		
-	}
-};
-
-class Traverser {
-public:
-	virtual ~Traverser() = 0;
-	virtual void begin_tr() = 0;
-	virtual void end_tr() = 0;
-	virtual void visit_arc() = 0;
-	virtual void visit_node() = 0;
-};*/
-
 #include <memory>
 #include "Graph.h"
 
@@ -54,11 +9,27 @@ public:
 	virtual void traverse(const Graph& ) = 0;
 };
 
+//template<typename Strategy>
+class Traverser_
+{
+public:
+	~Traverser_() = default;
+
+	template<typename Strategy>
+	static void traverse(const Graph& g);
+};
+
+
+
 class BFS_Traversion : public Traversion
 {
 public:
 	void traverse(const Graph& g) override {
 		
+	}
+
+	static void bfs(const std::shared_ptr<Node>& node, const Graph& g) {
+
 	}
 };
 
@@ -67,23 +38,24 @@ class DFS_Traversion : public Traversion
 	
 public:
 	void traverse(const Graph& g) override {
-		for (citerator it = g.cbegin(); it != g.cend(); ++it) {
-			dfs(*it); /*либо dfs(iterator), либо dfs(Node*), но по идее класс DFS_Traversion
-												не должен ничего знать о полях Node, поэтому от итератора?*/
-		}
+		
+		std::shared_ptr<Node> first_node = g.get_first_node();
+		dfs(first_node, g);
 	}
 
-private:
-	void dfs(const citerator& it) {
-		it.set_visited();
-		for (auto it_ : it.neighbours) {
-			/*citerator 
-			dfs(it_);*/
-			/*А тут что? Конструируем итератор по каждому элементу Node* и вызываем метод dfs(сконстр. итератор)?*/
+public:
+	static void dfs(const std::shared_ptr<Node>& node, const Graph& g) {
+		if (!node->visited()) {
+			node->set_visited();
+			std::vector<std::shared_ptr<Node>> neighbours = g.get_neighbours(node);
+			for (std::vector<std::shared_ptr<Node>>::const_iterator it = neighbours.cbegin(); 
+				it != neighbours.cend(); 
+				++it) {
+				dfs(*it, g);
+			}
 		}
 	}
 };
-
 
 class Traverser
 {
@@ -98,3 +70,17 @@ private:
 	std::shared_ptr<Traversion> pimpl;
 	std::shared_ptr<Graph> g;
 };
+
+template<>
+static void Traverser_::traverse<DFS_Traversion>(const Graph & g)
+{
+	std::shared_ptr<Node> first_node = g.get_first_node();
+	DFS_Traversion::dfs(first_node, g);
+}
+
+template<>
+static void Traverser_::traverse<BFS_Traversion>(const Graph & g)
+{
+	std::shared_ptr<Node> first_node = g.get_first_node();
+	BFS_Traversion::bfs(first_node, g);
+}
