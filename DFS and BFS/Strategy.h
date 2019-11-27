@@ -2,7 +2,7 @@
 #include <memory>
 #include "Graph.h"
 
-class Traversion
+/*class Traversion
 {
 public:
 	virtual ~Traversion() {}
@@ -83,4 +83,33 @@ static void Traverser_::traverse<BFS_Traversion>(const Graph & g)
 {
 	std::shared_ptr<Node> first_node = g.get_first_node();
 	BFS_Traversion::bfs(first_node, g);
-}
+}*/
+
+class Traverser;
+
+class Strategy {
+public:
+	virtual ~Strategy() = 0;
+	void set_traverser(std::shared_ptr<Traverser> tr_) { tr = tr_; }
+	virtual void go(const Graph&, const Traverser&) = 0; /*стратегия обхода, переопределяется в наследниках. */
+private:
+	std::shared_ptr<Traverser> tr;
+};
+
+class DFS_Strategy : public Strategy
+{
+
+public:
+	virtual void go(const Graph& g, const Traverser&) override {
+		/*if (!node->visited()) {
+			node->set_visited();
+			std::vector<std::shared_ptr<Node>> neighbours = g.get_neighbours(node);
+			for (std::vector<std::shared_ptr<Node>>::const_iterator it = neighbours.cbegin();
+				it != neighbours.cend();
+				++it) {
+				dfs(*it, g);
+			}
+		}*/
+	}
+};
+

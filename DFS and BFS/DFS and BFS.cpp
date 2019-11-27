@@ -13,8 +13,8 @@ int main()
 	//g.addNode(a);
 	//g.add_node(1);
 
-	Traverser_::traverse<DFS_Traversion>(g);
-	Traverser_::traverse<BFS_Traversion>(g);
+	//Traverser_::traverse<DFS_Traversion>(g);
+	//Traverser_::traverse<BFS_Traversion>(g);
 
     std::cout << "Hello World!\n"; 
 }
