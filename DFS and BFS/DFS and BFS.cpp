@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include <iostream>
 
+#include "Traverser.h"
 #include "Graph.h"
 #include "MyGraph.h"
 #include "Strategy.h"
@@ -8,14 +9,14 @@
 int main()
 {
 	size_t size = 1;
-	MyGraph g(1);
+	std::shared_ptr<MyGraph> g (new MyGraph(1));
 	int a = 5;
-	//g.addNode(a);
-	//g.add_node(1);
-
-	//Traverser_::traverse<DFS_Traversion>(g);
-	//Traverser_::traverse<BFS_Traversion>(g);
-
+	
+	std::shared_ptr<DFS_Strategy> strat (new DFS_Strategy);
+	ConcreteTraverser tr;
+	tr.set_strategy(strat);
+	tr.set_graph(g);
+	tr.traverse();
     std::cout << "Hello World!\n"; 
 }
 

@@ -3,7 +3,7 @@
 #include <memory>
 #include "Data.h"
 #include "Node.h"
-
+#include "Edge.h"
 
 
 class Graph {
