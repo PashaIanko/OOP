@@ -9,17 +9,23 @@
 #include <iterator>
 #include <utility>
 #include <stdexcept>
+#include "InternalIterator.h"
 
 
 template <class T = int>
 class Trie {
 public:
 
-	typedef TrieIterator<T> iterator;
-	typedef ConstTrieIterator<T> const_iterator;
-	typedef T value_type;
-	typedef std::string key_type;
+	/*ниже, iterator_ const_iterator_ - попытка добавить темплейтный класс, но чтобы
+	не сломать уже работающее*/
+	using iterator_ = InternalIterator<T, false>;
+	using const_iterator_ = InternalIterator<T, true>;
 
+	using iterator =  TrieIterator<T>;
+	using const_iterator = ConstTrieIterator<T>;
+	using value_type = T;
+	using key_type = std::string;
+	
 	template<typename>
 	friend class TestHelper;
 
@@ -32,8 +38,7 @@ public:
 	Trie() : trie_size(0) { root = new SubTrie<T>; };
 
 
-	template <class InputIterator>/*,
-	std::enable_if_t<std::is_same<InputIterator::value, std::pair<key_type, value_type>>>> */
+	template <class InputIterator>
 	Trie(InputIterator first, InputIterator last) {
 		root = new SubTrie<T>;
 		for (auto it = first; it != last; ++it) {
@@ -75,6 +80,7 @@ public:
 			symb = pair.first;
 			if (node->is_word_end()) {
 				search_str += symb;
+				//return iterator_(search_str, pair.second);
 				return iterator(search_str, pair.second);
 			}
 			first_node = node;
@@ -90,17 +96,6 @@ public:
 	};
 
 	iterator end() {
-		/*returning iterator pointing to the node closest to the right side of tree*/
-
-		/*previous realization*/
-		/*SubTrie<T>* last_node = root;
-
-		while (last_node->children.size()) {
-			auto it = last_node->children.rbegin();
-			last_node = it->second;
-		}
-		last_node += sizeof(SubTrie<T>);
-		return iterator(last_node);*/
 		iterator it;
 		it.init_invalid(&it);
 		return it;
@@ -182,24 +177,6 @@ public:
 		for (iterator it = first; it != last;) {
 			erase(it++);
 		}
-
-	/*	for (iterator it = first; it != last; ++it) {
-			if (it.data->is_word_end()) {
-				it.set_word_end(false);
-			}
-		}*/
-		/*удал€ем все ноды с false, у которых нет потомков, поднима€сь
-		наверх и провер€€, можно ли удалить ещЄ и верхние*/
-		//std::pair<SubTrie<T>*, std::string> pair;
-		//while (1){
-		//	pair = find_deletable_node(first, last);/*найти ноду с is_end_of_word == false и без потомков, чтобы удалить*/
-		//	if ( !(pair.first == nullptr && pair.second == "") /*выдаютс€, если не нашЄл*/) {
-		//	internal_erase(pair.first, pair.second);
-		//	}
-		//	else
-		//		break;
-		//}
-		
 	};
 
 	void swap(Trie& trie) {
@@ -405,7 +382,5 @@ inline std::pair<TrieIterator<T>, bool> Trie<T>::insert(const key_type & k, cons
 	iterator it_(temp);
 	std::pair<TrieIterator<T>, bool> p{ it_, true };
 	return p;
-
-	/*return std::pair<iterator, bool>();*/
 }
 

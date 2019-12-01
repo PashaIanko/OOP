@@ -15,8 +15,6 @@ template<typename T>
 class has_greater {
 public:
 	has_greater(char ch_) : ch(ch_) {}
-
-	//	template<typename T>
 	bool operator() (const std::pair<char, SubTrie<T>*> & p) {
 		if (!(p.second)->if_attended())
 			return (p.first >= ch);
@@ -33,14 +31,8 @@ public:
 	is_not_attended() = default;
 	is_not_attended(const std::vector<SubTrie<T>*>& vect_) : vect(vect_) {}
 	bool operator() (const std::pair<char, SubTrie<T>*> & p) {
-		/*if ((p.second)->if_attended() == false) {
-			return true;
-		}
-		else
-			return false;*/
 		auto it = std::find(vect.begin(), vect.end(), p.second);
-		return (it == vect.end());// {
-			/*в векторе уже посещённых вершин не нашли*/
+		return (it == vect.end());
 	}
 	static bool if_not_attended(std::pair<char, SubTrie<T>*> & p) {
 		return true;
@@ -54,7 +46,7 @@ template <class T>
 class TrieIterator
 {
 
-	typedef std::pair<std::string, T&> value_type;// typedef T value_type;
+	typedef std::pair<std::string, T&> value_type;
 
 	template <typename>
 	friend class Trie;
@@ -94,11 +86,7 @@ public:
 			if (unvisited == (data->children).cend()) {
 				SubTrie<T>* parent = data->parent;
 				if (parent != nullptr) {
-
-
-					/*data->attended = true;*/
 					add_attended(data);
-
 					data = parent;
 					buf_symb = *search_str.rbegin();
 					search_str.erase(search_str.size() - 1);
@@ -110,16 +98,13 @@ public:
 			}
 			else {
 				search_str += unvisited->first;
-				symbol = search_str.rbegin(); //refresh current symbol
+				symbol = search_str.rbegin(); 
 				buf_symb = unvisited->first;
-
-				/*data->attended = true;*/
 				add_attended(data);
-
 				data = unvisited->second;
 			}
 		} while (!(this->data->is_end_of_word == true
-			&& node_is_not_attended(this->data)));//&& (this->data->attended == false)));
+			&& node_is_not_attended(this->data)));
 		return *this;
 	};
 
@@ -137,14 +122,12 @@ public:
 
 	value_type operator*() {
 		init_iter_value();
-		return iter_value;//return (this->data)->value; 
+		return iter_value;
 
-	};//{ return std::pair<std::string, T&> p(search_str, (this->data)->value); };
+	};
 	value_type * operator->() {
 		init_iter_value();
 		return &iter_value;
-		//return &((this->p)->value); 
-
 
 	}; /*я не могу возвращать указатель
 		на локально созданную в теле метода пару, она ведь
