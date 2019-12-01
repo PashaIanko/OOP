@@ -134,7 +134,10 @@ TEST(OPERATOR_EXTRACT, correct_key_no_throw) {
 TEST(OPERATOR_EXTRACT, part_of_key_but_not_key_itself) {
 	Trie<> t;
 	t.insert("abc", 1);
-	EXPECT_THROW(t["ab"], std::invalid_argument);
+	int val = t["ab"];
+	int default_int{};
+	EXPECT_NO_THROW(t["ab"]);
+	EXPECT_EQ(val, default_int);
 }
 
 TEST(SIZE, one_element) {
@@ -326,7 +329,7 @@ TEST(ERASE_KEY, two_keys_erase_prev_key_OK) {
 	t.insert("abcd", 4);
 	EXPECT_EQ(t.size(), 2);
 	std::string str("abc");
-	size_t val = t.erase(str);
+	/*size_t val =*/ t.erase(str);
 	EXPECT_EQ(t.size(), 1);
 	auto it = t.find(str);
 	EXPECT_EQ(it, t.end());
@@ -353,7 +356,7 @@ TEST(ERASE_KEY, delete_nodes_scenario) {
 	t.insert("abge", 4);
 
 	std::string str("abge");
-	size_t val = t.erase(str);
+	/*size_t val = */t.erase(str);
 	EXPECT_EQ(t.find(str), t.end());
 	EXPECT_NE(t.find("abc"), t.end());
 	EXPECT_FALSE(t.empty());
@@ -365,7 +368,7 @@ TEST(ERASE_KEY, single_key_map_erase) {
 	Trie<>t;
 	t.insert("abcd", 2);
 	std::string str("abcd");
-	size_t val = t.erase(str);
+	/*size_t val = */t.erase(str);
 	EXPECT_EQ(t.find(str), t.end());
 	EXPECT_TRUE(t.empty());
 	EXPECT_EQ(t.size(), 0);
@@ -379,7 +382,7 @@ TEST(ERASE_KEY, two_keys_one_prefix_t_another) {
 	std::string bc("bc");
 	std::string b("b");
 	EXPECT_EQ(t.size(), 2);
-	size_t val = t.erase("bc");
+	/*size_t val = */t.erase("bc");
 	EXPECT_EQ(t.find("bc"), t.end());
 	EXPECT_FALSE(t.empty());
 	EXPECT_EQ(t.size(), 1);
@@ -489,7 +492,7 @@ TEST(ITERATOR, one_elem_trie_cycle) {
 	Trie<> t;
 	t.insert("a", 1);
 	size_t count = 0;
-	for (auto it = t.begin(); it != t.end(); ++it) {
+	for (Trie<int>::iterator it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
 		EXPECT_EQ(i.second, 1);
 		count++;
@@ -502,7 +505,7 @@ TEST(ITERATOR, two_elems_trie_cycle) {
 	t.insert("a", 1);
 	t.insert("b", 2);
 
-	int i = 0;
+	//int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -518,9 +521,9 @@ TEST(ITERATOR, three_elems_trie_cycle) {
 	t.insert("b", 2);
 	t.insert("c", 3);
 
-	int i = 0;
+	//int i = 0;
 	int count = 1;
-	for (auto it = t.begin(); it != t.end(); ++it) {
+	for (Trie<int>::iterator it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
 		EXPECT_EQ(i.second, count);
 		++count;
@@ -533,9 +536,9 @@ TEST(ITERATOR, iterate_over_two_letter_word) {
 	t.insert("a", 1);
 	t.insert("ab", 2);
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
-	for (auto it = t.begin(); it != t.end(); ++it) {
+	for (Trie<int>::iterator it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
 		EXPECT_EQ(i.second, count);
 		++count;
@@ -547,7 +550,7 @@ TEST(ITERATOR, long_word_one_key) {
 	Trie<> t;
 	t.insert("abcdefghti", 1);
 	
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -563,7 +566,7 @@ TEST(ITERATOR, tree_like_structure) {
 	t.insert("bc", 2);
 	t.insert("bd", 3);
 
-	int i = 0;
+	//int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -580,7 +583,7 @@ TEST(ITERATOR, wide_tree_structure) {
 	t.insert("acf", 3);
 	t.insert("acg", 4);
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -602,7 +605,7 @@ TEST(ITERATOR, three_nodes_broadcast_tree_structure) {
 	t.insert("adl", 8);
 	t.insert("adm", 9);
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -634,7 +637,7 @@ TEST(ITERATOR, three_nodes_broadcast_tree_structure_) {
 	t.insert("bdl", 17);
 	t.insert("bdm", 18);
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -648,7 +651,7 @@ TEST(ITERATOR, two_long_words) {
 	Trie<> t;
 	t.insert("First", 1);
 	t.insert("Second", 2);
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -666,7 +669,7 @@ TEST(ITERATOR, many_long_words) {
 	t.insert("Dhird", 4);
 	t.insert("Ehird", 5);
 	t.insert("Fhird", 6);
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -688,7 +691,7 @@ TEST(ITERATOR, combo_broadcast_long_words) {
 	t.insert("ca", 6);
 	t.insert("cb", 7);
 	t.insert("cc", 8);
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -706,7 +709,7 @@ TEST(ITERATOR, long_word_prefix_keys) {
 	t.insert("lo", 1);
 	
 	
-	int i = 0;
+	//int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -715,6 +718,7 @@ TEST(ITERATOR, long_word_prefix_keys) {
 	}
 	EXPECT_EQ(count, 4);
 }
+
 
 TEST(ITERATOR, three_long_word_prefix_keys) {
 	Trie<> t;
@@ -728,7 +732,7 @@ TEST(ITERATOR, three_long_word_prefix_keys) {
 	t.insert("new long word", 6);
 
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -750,7 +754,7 @@ TEST(ITERATOR, three_long_word_prefix_keys_2) {
 	t.insert("n l w", 6);
 
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -774,7 +778,7 @@ TEST(ITERATOR, combo_broadcast_many_long_words) {
 	t.insert("ca", 6);
 	t.insert("cb", 7);
 	t.insert("cc", 8);
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end(); ++it) {
 		std::pair<std::string, int> i = *it;
@@ -824,7 +828,7 @@ TEST(POSTFIX_INCREMENT, combo_broadcast_many_long_words_cycle) {
 	t.insert("ca", 6);
 	t.insert("cb", 7);
 	t.insert("cc", 8);
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end();) {
 		std::pair<std::string, int> i = *it++;
@@ -842,7 +846,7 @@ TEST(POSTFIX_INCREMENT, long_word_prefix_keys_cycle) {
 	t.insert("lo", 1);
 
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end();) {
 		std::pair<std::string, int> i = *it++;
@@ -864,7 +868,7 @@ TEST(POSTFIX_INCREMENT, three_long_word_prefix_keys_cycle) {
 	t.insert("new long word", 6);
 
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end();) {
 		std::pair<std::string, int> i = *it++;
@@ -885,7 +889,7 @@ TEST(POSTFIX_INCREMENT, three_long_word_prefix_keys) {
 	t.insert("bbb", 6);
 
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end();) {
 		std::pair<std::string, int> i = *it++;
@@ -907,7 +911,7 @@ TEST(POSTFIX_INCREMENT, three_long_word_prefix_keys_2_cycle) {
 	t.insert("n l w", 6);
 
 
-	int i = 0;
+//	int i = 0;
 	int count = 1;
 	for (auto it = t.begin(); it != t.end();) {
 		std::pair<std::string, int> i = *it++;
@@ -1007,7 +1011,7 @@ TEST(ERASE_AT_ITERATOR, prefix_as_a_key) {
 	EXPECT_TRUE(p.first == "abc" && p.second == 2);
 }
 
-/*TEST(ERASE_AT_ITERATOR, cycle_full_erase) {
+TEST(ERASE_AT_ITERATOR, full_erase) {
 	Trie<>t;
 	t.insert("a", 1);
 	t.insert("aa", 2);
@@ -1018,76 +1022,13 @@ TEST(ERASE_AT_ITERATOR, prefix_as_a_key) {
 	
 
 	EXPECT_EQ(t.size(), 6);
-	
-	size_t count = 0;
-	for (Trie<int>::iterator it = t.begin(); it != t.end(); ++it) {
-
-		t.erase(it);
-		count++;
-	}
-	EXPECT_EQ(count, 6);
+	t.erase(t.begin(), t.end());
+	EXPECT_EQ(t.size(), 0);
 	EXPECT_TRUE(t.empty());
-	EXPECT_TRUE(t.size() == 0);
 
 	EXPECT_EQ(t.find("a"), t.end());
-	EXPECT_EQ(t.find("aa"), t.end());
-}*/
-
-/*TEST(ERASE_AT_ITERATOR, one_elem_erase_in_cycle) {
-	Trie<>t;
-	t.insert("a", 1);
-	
-	EXPECT_EQ(t.size(), 1);
-
-	size_t count = 0;
-	for (Trie<int>::iterator it = t.begin(); it != t.end(); ++it) {
-		t.erase(it);
-		count++;
-	}
-	EXPECT_EQ(count, 1);
-	EXPECT_TRUE(t.empty());
-	EXPECT_TRUE(t.size() == 0);
-
-	EXPECT_EQ(t.find("a"), t.end());
-}
-
-TEST(ERASE_AT_ITERATOR, two_letter_word_erase_in_cycle) {
-	Trie<>t;
-	t.insert("aa", 1);
-
-	EXPECT_EQ(t.size(), 1);
-
-	size_t count = 0;
-	for (Trie<int>::iterator it = t.begin(); it != t.end(); ++it) {
-		t.erase(it);
-		count++;
-	}
-	EXPECT_EQ(count, 1);
-	EXPECT_TRUE(t.empty());
-	EXPECT_TRUE(t.size() == 0);
-
 	EXPECT_EQ(t.find("aa"), t.end());
 }
-
-TEST(ERASE_AT_ITERATOR, two_letter_word_two_keys_erase_in_cycle) {
-	Trie<>t;
-	t.insert("aa", 2);
-	t.insert("a", 1);
-
-	EXPECT_EQ(t.size(), 2);
-
-	size_t count = 0;
-	for (Trie<int>::iterator it = t.begin(); it != t.end(); ++it) {
-		t.erase(it);
-		count++;
-	}
-	EXPECT_EQ(count, 2);
-	EXPECT_TRUE(t.empty());
-	EXPECT_TRUE(t.size() == 0);
-
-	EXPECT_EQ(t.find("aa"), t.end());
-	EXPECT_EQ(t.find("a"), t.end());
-}*/
 
 TEST(ERASE_AT_ITERATOR, copy_constructor_erase_in_one_trie) {
 	Trie<>t;
@@ -1138,6 +1079,74 @@ TEST(ERASE_AT_ITERATOR, pretfix_inc_erase) {
 	EXPECT_TRUE(p.first == "a" && p.second == 1);
 	EXPECT_EQ(t.find("aa"), t.end());
 }
+
+TEST(ERASE_FROM_TO, one_element_trie) {
+	Trie<>t;
+	t.insert("a", 1);
+	
+	t.erase(t.begin(), t.end());
+
+	EXPECT_EQ(t.size(), 0);
+	EXPECT_TRUE(t.empty());
+
+	EXPECT_EQ(t.find("a"), t.end());
+}
+
+TEST(ERASE_FROM_TO, erase_all) {
+	Trie<>t;
+	t.insert("a", 1);
+	t.insert("ab", 2);
+	t.insert("b", 3);
+
+	t.erase(t.begin(), t.end());
+
+	EXPECT_EQ(t.size(), 0);
+	EXPECT_TRUE(t.empty());
+
+	EXPECT_EQ(t.find("a"), t.end());
+	EXPECT_EQ(t.find("ab"), t.end());
+	EXPECT_EQ(t.find("b"), t.end());
+}
+
+TEST(ERASE_FROM_TO, iterator_refresh_check) {
+	Trie<>t;
+	t.insert("a", 1);
+	t.insert("ab", 2);
+	t.insert("b", 3);
+
+	t.erase(t.begin(), ++(++t.begin()));
+
+	EXPECT_EQ(t.size(), 1);
+	EXPECT_FALSE(t.empty());
+
+	EXPECT_EQ(t.find("a"), t.end());
+	EXPECT_EQ(t.find("ab"), t.end());
+	EXPECT_NE(t.find("b"), t.end());
+}
+
+TEST(ERASE_AT_ITERATOR, repeated_erase) {
+	Trie<>t;
+	t.insert("a", 1);
+	t.insert("ab", 2);
+	t.insert("abc", 3);
+
+	t.insert("b", 4);
+	t.insert("bc", 5);
+
+	t.erase(t.begin(), ++t.begin());
+
+	EXPECT_EQ(t.size(), 4);
+	EXPECT_EQ(t.find("a"), t.end());
+
+	t.erase(t.begin(), ++(++t.begin()));
+	EXPECT_EQ(t.size(), 2);
+	EXPECT_EQ(t.find("ab"), t.end());
+	EXPECT_EQ(t.find("abc"), t.end());
+	
+	EXPECT_NE(t.find("bc"), t.end());
+	EXPECT_NE(t.find("b"), t.end());
+}
+
 
 int main(int argc, char *argv[])
 {

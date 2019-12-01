@@ -4,6 +4,7 @@
 #include "Bad_search_exception.h"
 #include "subtrie.h"
 #include <map>
+#include <utility>
 #include <string>
 #include <iterator>
 #include <utility>
@@ -78,7 +79,7 @@ public:
 			}
 			first_node = node;
 			search_str += symb;
-			
+
 		}
 		iterator it;
 		return it;
@@ -90,7 +91,7 @@ public:
 
 	iterator end() {
 		/*returning iterator pointing to the node closest to the right side of tree*/
-		
+
 		/*previous realization*/
 		/*SubTrie<T>* last_node = root;
 
@@ -130,8 +131,9 @@ public:
 		if (temp->is_end_of_word)
 			return temp->value;
 		else {
-			std::invalid_argument exc("ab");
-			throw exc;
+			T val{};
+			std::pair<TrieIterator<T>, bool> p = insert(k, val);
+			return p.first.data->value; /*replicate std::map<> interface*/
 		}
 	};
 
@@ -171,7 +173,34 @@ public:
 		internal_erase(temp, k);
 		return trie_size;
 	};
-	void erase(iterator first, iterator last);
+
+	void erase(iterator first, iterator last) {
+		
+		/*два прохода. ѕервый - пометить False по каждому итератору, но без модификации структуры
+		второй - удалить все ноды с false*/
+		
+		for (iterator it = first; it != last;) {
+			erase(it++);
+		}
+
+	/*	for (iterator it = first; it != last; ++it) {
+			if (it.data->is_word_end()) {
+				it.set_word_end(false);
+			}
+		}*/
+		/*удал€ем все ноды с false, у которых нет потомков, поднима€сь
+		наверх и провер€€, можно ли удалить ещЄ и верхние*/
+		//std::pair<SubTrie<T>*, std::string> pair;
+		//while (1){
+		//	pair = find_deletable_node(first, last);/*найти ноду с is_end_of_word == false и без потомков, чтобы удалить*/
+		//	if ( !(pair.first == nullptr && pair.second == "") /*выдаютс€, если не нашЄл*/) {
+		//	internal_erase(pair.first, pair.second);
+		//	}
+		//	else
+		//		break;
+		//}
+		
+	};
 
 	void swap(Trie& trie) {
 		size_t temp_size = trie.trie_size;
@@ -232,10 +261,46 @@ public:
 private:
 	SubTrie<T>* root;
 	size_t trie_size;
-
 	SubTrie<T>* internal_delete(SubTrie<T>* ptr, const char ch);
 	void internal_erase(SubTrie<T>* ptr, const key_type& k);
+	std::pair<SubTrie<T>*, std::string> find_deletable_node(iterator first, iterator last);
+
+
+	iterator internal_begin();
 };
+
+
+template<class T>
+std::pair<SubTrie<T>*, std::string> Trie<T>::find_deletable_node(iterator first, iterator last) {
+	for (iterator it = first; it != last; it.assign_next_node()) {
+		if (it.is_end_of_word() == false &&
+			it.data->children.empty()) {
+			std::pair<SubTrie<T>*, std::string> p{it.data, it.search_str};
+			return p;
+		}
+	}
+	std::pair<SubTrie<T>*, std::string> invalid_pair {nullptr, ""};
+	return invalid_pair;
+}
+
+template<class T>
+TrieIterator<T> Trie<T>::internal_begin() {
+	/*internal begin internal ++ - те же методы, но мы итератор получаем, Ќ≈ игнориру€
+	is_end_of_word == true. »тератор написан так, чтобы обходить ноды, которые не €вл€ютс€ концами слов.
+	дл€ удалени€, нам нужен доступ к этим нодам, но соответствующих методов нет - делаем внутренние
+	методы соответствующие*/
+	SubTrie<T>* first_node = root;
+	SubTrie<T>* node;
+	std::string search_str;
+	if (first_node != nullptr) {
+		return iterator(search_str, first_node);
+	}
+	else {
+		iterator it;
+		it.init_invalid(&it);
+		return it;
+	}
+}
 
 template<class T>
 void Trie<T>::internal_erase(SubTrie<T>* temp, const key_type& k) {
@@ -327,8 +392,8 @@ inline std::pair<TrieIterator<T>, bool> Trie<T>::insert(const key_type & k, cons
 				temp->value = val;
 				temp->is_end_of_word = true;
 				trie_size++;
-				iterator it(temp);
-				std::pair<TrieIterator<T>, bool> p{ it, true };
+				iterator temp_it(temp);
+				std::pair<TrieIterator<T>, bool> p{ temp_it, true };
 				return p;
 			}
 

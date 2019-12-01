@@ -28,7 +28,7 @@ public:
 	};
 	bool if_attended() const { return attended; };
 	inline bool is_word_end() const { return is_end_of_word; }
-
+	void set_if_attended(bool arg) { attended = arg; };
 private:
 	SubTrie() { };
 	SubTrie(const bool is_end_of_word_, const value_type& value_, SubTrie<T>* const parent_) :
