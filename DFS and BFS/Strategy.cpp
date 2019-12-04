@@ -43,6 +43,7 @@ void DFS_Strategy::dfs(Graph & g, std::shared_ptr<Node>& node) {
 			++it) {
 			
 			std::shared_ptr<Edge> edge = g.get_edge(*node, *(*it));
+			/*конструируем едже по двум нодам --> visit_edge*/
 			traverser_visit_edge(*edge);
 			dfs(g, *(it));
 		}
