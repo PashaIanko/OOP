@@ -37,9 +37,9 @@ void DFS_Strategy::dfs(Graph & g, std::shared_ptr<Node>& node) {
 	if (!node->visited()) {
 		traverser_visit_node(*node);
 		node->set_visited();
-		std::vector<std::shared_ptr<Node>> neighbours = g.get_neighbours(node);
-		for (std::vector<std::shared_ptr<Node>>::iterator it = neighbours.begin();
-			it != neighbours.end();
+		
+		for (std::vector<std::shared_ptr<Node>>::iterator it = node->neighbours_begin();
+			it != node->neighbours_end();
 			++it) {
 			
 			std::shared_ptr<Edge> edge = g.get_edge(*node, *(*it));

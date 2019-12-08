@@ -7,12 +7,13 @@ public:
 	~MyGraph() = default;
 
 public:
-	virtual std::vector<std::shared_ptr<Node>>
-		get_neighbours(const std::shared_ptr<Node>) const override; 
+	/*virtual std::vector<std::shared_ptr<Node>>
+		get_neighbours(const std::shared_ptr<Node>) const override; */
 	
 	virtual std::shared_ptr<Node> get_first_node() const override; 
 
 	virtual void addNode(const Node& d, std::vector<NodeID> neighbours) override;
+	virtual void addNode(const Node& d) override;
 
 	virtual void begin() override;
 	virtual void end() override;
@@ -21,5 +22,8 @@ public:
 private:
 	size_t size = 0;
 	std::vector<std::shared_ptr<Node>> nodeArray{};
-	std::vector<std::shared_ptr<Edge>> edgeArray{};
+	//std::vector<std::shared_ptr<Edge>> edgeArray{};
+	std::shared_ptr<Node> node_is_present(const Node& n) const;
+	std::shared_ptr<Node> node_is_present(const NodeID& id) const;
+	//void set_neighbour_node(std::shared_ptr<Node> neighbour, const Node& node);
 };

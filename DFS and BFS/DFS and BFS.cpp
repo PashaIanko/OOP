@@ -7,12 +7,12 @@
 #include "NodeID.h"
 #include <vector>
 
-int main()
+/*int main()
 {
 	size_t size = 1;
 	std::shared_ptr<MyGraph> g (new MyGraph);
 
-	MyNode my_node(5, 1); 
+	Node my_node(5, 1); 
 	
 	std::vector<NodeID> v{};
 	NodeID id;
@@ -31,5 +31,5 @@ int main()
 	tr->set_graph(g);
 	tr->traverse();
     std::cout << "Hello World!\n"; 
-}
+}*/
 
