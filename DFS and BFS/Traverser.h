@@ -16,25 +16,48 @@ public:
 	void set_strategy(const std::shared_ptr<Strategy>& strat_);
 	void set_graph(const std::shared_ptr<Graph>& graph_);
 
+	
+	void traverse(); 
+
+protected:
 	void graph_begin(); /*нет смысла добавлять поля Graph во всех наследниках. Идея, что
 						Traverser будет классом протоколом, в наследниках эти поля уже не нужны, а работа
 						в наследниках через интерфейс базового класса - добавление графа, вызов Graph::begin() и.т.п.*/
 	void graph_end();
-
-	void traverse(); 
 
 private:
 	std::shared_ptr<Strategy> strat{};
 	std::shared_ptr<Graph> graph{};
 };
 
-class ConcreteTraverser : public Traverser {
+class EmptyTraverser : public Traverser {
 public:
-	ConcreteTraverser() = default;
-	~ConcreteTraverser() = default;
-		
+	EmptyTraverser() = default;
+	~EmptyTraverser() = default;
+
 	virtual void begin() override;
 	virtual void end() override;
 	virtual void visit_node(const Node&) override {}; //посещ узла
 	virtual void visit_edge(const Edge&) override {}; //посещ ребра 
+};
+
+class TestTraverser : public Traverser {
+public:
+	TestTraverser() = default;
+	~TestTraverser() = default;
+
+	virtual void begin() override {};
+	virtual void end() override {};
+	virtual void visit_node(const Node&) override; //посещ узла
+	virtual void visit_edge(const Edge&) override; //посещ ребра 
+
+	bool nodes_match(const std::vector<NodeID> v) const;
+	bool edges_match(const std::vector<Edge> v) const;
+
+private:
+	/*держим вектор Node Id, куда закидываем айди
+	посещаемых нод. В наруже, в тестах, сравниваем с ожидаемой после
+	довательностью*/
+	std::vector<NodeID> nodes_sequence {};
+	std::vector <Edge> edges_sequence{};
 };

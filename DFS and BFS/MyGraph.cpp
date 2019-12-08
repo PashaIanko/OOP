@@ -42,6 +42,19 @@ void MyGraph::begin() {
 void MyGraph::end() {
 }
 
+bool MyGraph::all_visited() const
+{
+	auto it = std::find_if
+	(
+		nodeArray.cbegin(),
+		nodeArray.cend(),
+		[](const std::shared_ptr<Node> ptr) {
+			return !(ptr->visited());
+		}
+	);
+	return it == nodeArray.cend();
+}
+
 class equal_id {
 public:
 	equal_id(const Node& n_) : n(n_) {};

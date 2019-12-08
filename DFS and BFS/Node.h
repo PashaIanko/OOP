@@ -29,5 +29,5 @@ private:
 	//std::vector<std::shared_ptr<NodeID>> neighbour_ids{};
 	NodeID id {};
 	int data;
-	bool id_is_present(const NodeID& id);
+	//bool id_is_present(const NodeID& id);
 };
