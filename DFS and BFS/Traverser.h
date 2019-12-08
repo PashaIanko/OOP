@@ -10,8 +10,8 @@ public:
 	virtual void begin() {}; //можно переопределить, можно и нет, по желанию, мысль такая
 	virtual void end() {};
 	
-	virtual void visit_node(const Node&) = 0; //посещ узла
-	virtual void visit_edge(const Edge&) = 0; //посещ ребра 
+	virtual bool visit_node(const Node&) = 0; //посещ узла - если true вернули - нашли, что хотели
+	virtual bool visit_edge(const Edge&) = 0; //посещ ребра 
 
 	void set_strategy(const std::shared_ptr<Strategy>& strat_);
 	void set_graph(const std::shared_ptr<Graph>& graph_);
@@ -37,8 +37,8 @@ public:
 
 	virtual void begin() override;
 	virtual void end() override;
-	virtual void visit_node(const Node&) override {}; //посещ узла
-	virtual void visit_edge(const Edge&) override {}; //посещ ребра 
+	virtual bool visit_node(const Node&) override { return false; }; //посещ узла
+	virtual bool visit_edge(const Edge&) override { return false; }; //посещ ребра 
 };
 
 class TestTraverser : public Traverser {
@@ -48,8 +48,8 @@ public:
 
 	virtual void begin() override {};
 	virtual void end() override {};
-	virtual void visit_node(const Node&) override; //посещ узла
-	virtual void visit_edge(const Edge&) override; //посещ ребра 
+	virtual bool visit_node(const Node&) override; //посещ узла
+	virtual bool visit_edge(const Edge&) override; //посещ ребра 
 
 	bool nodes_match(const std::vector<NodeID> v) const;
 	bool edges_match(const std::vector<Edge> v) const;

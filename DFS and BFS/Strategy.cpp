@@ -13,14 +13,14 @@ void Strategy::traverser_begin(){
 	}
 }
 
-void Strategy::traverser_visit_node(Node & node) {
+bool Strategy::traverser_visit_node(Node & node) {
 	auto shared_traverser = traverser.lock();
 	if (shared_traverser != nullptr) {
 		shared_traverser->visit_node(node);
 	}
 }
 
-void Strategy::traverser_visit_edge(Edge& edge) {
+bool Strategy::traverser_visit_edge(Edge& edge) {
 	auto shared_traverser = traverser.lock();
 	if (shared_traverser != nullptr) {
 		shared_traverser->visit_edge(edge);
@@ -29,24 +29,29 @@ void Strategy::traverser_visit_edge(Edge& edge) {
 
 void DFS_Strategy::go(Graph & g, std::shared_ptr<Node> start_node) {
 	traverser_begin();
-	//std::shared_ptr<Node> node = g.get_first_node();
 	dfs(g, start_node);
 }
 
 void DFS_Strategy::dfs(Graph & g, std::shared_ptr<Node>& node) {
 	if (!node->visited()) {
-		traverser_visit_node(*node);
+
+		bool visit_node_res = traverser_visit_node(*node);
 		node->set_visited();
 		
+		if (visit_node_res)
+			return;
+
 		for (std::vector<std::shared_ptr<Node>>::iterator it = node->neighbours_begin();
 			it != node->neighbours_end();
 			++it) {
+
 			if (!(*it)->visited()) {
 				Edge edge(node, *it);
-				//std::shared_ptr<Edge> edge = g.get_edge(*node, *(*it));
-				/*конструируем едже по двум нодам --> visit_edge*/
-				traverser_visit_edge(edge);
-				dfs(g, *(it));
+				if (traverser_visit_edge(edge))
+					return;
+				else {
+					dfs(g, *(it)); /*если не нашли ни в вершине ни в ребре, продолжаем поиск*/
+				}
 			}
 		}
 	}
@@ -58,17 +63,29 @@ void BFS_Strategy::go(Graph & g, std::shared_ptr<Node> start_node) {
 }
 
 void BFS_Strategy::bfs(Graph & g, std::shared_ptr<Node>& node) {
+
+	bool visit_node_res = false;
 	if (!node->visited()) {
-		traverser_visit_node(*node);
+		visit_node_res = traverser_visit_node(*node);
 		node->set_visited();
 	}
+
+	if (visit_node_res)
+		return;
+
 	for (auto it = node->neighbours_begin(); it != node->neighbours_end(); ++it) {
+
 		if (!(*it)->visited()) {
-			traverser_visit_node(*(*it));
+			visit_node_res = traverser_visit_node(*(*it));
 			(*it)->set_visited();
 
+			if (visit_node_res)
+				return;
+
 			Edge edge(node, *it);
-			traverser_visit_edge(edge);
+
+			if (traverser_visit_edge(edge)) /*посещение ребра вернуло true? нашли что хотели с ребром*/
+				return;
 
 			nodes_stack.push_back(*it);
 		}
@@ -80,5 +97,6 @@ void BFS_Strategy::bfs(Graph & g, std::shared_ptr<Node>& node) {
 		nodes_stack.pop_front();
 		bfs(g, temp_node);
 	}
+		
 	
 }

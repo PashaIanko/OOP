@@ -30,12 +30,14 @@ void EmptyTraverser::end() {
 	graph_end();
 }
 
-void TestTraverser::visit_node(const Node & n) {
+bool TestTraverser::visit_node(const Node & n) {
 	nodes_sequence.push_back(n.get_id());
+	return false;
 }
 
-void TestTraverser::visit_edge(const Edge & e) {
+bool TestTraverser::visit_edge(const Edge & e) {
 	edges_sequence.push_back(e);
+	return false;
 }
 
 bool TestTraverser::nodes_match(const std::vector<NodeID> v) const

@@ -13,8 +13,8 @@ public:
 	virtual void go(Graph&, std::shared_ptr<Node>) = 0; // /*стратегия обхода, переопределяется в наследниках. */
 
 	void traverser_begin();
-	void traverser_visit_node(Node& node);
-	void traverser_visit_edge(Edge& edge);
+	bool traverser_visit_node(Node& node);
+	bool traverser_visit_edge(Edge& edge);
 
 private:
 	std::weak_ptr<Traverser> traverser{};
