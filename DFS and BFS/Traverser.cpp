@@ -49,3 +49,24 @@ bool TestTraverser::edges_match(const std::vector<Edge> v) const
 {
 	return edges_sequence == v;
 }
+
+bool SpecificFindTraverser::visit_node(const Node & n)
+{
+	nodes_sequence.push_back(n.get_id());
+	return n.get_data() == data_to_find;
+}
+
+bool SpecificFindTraverser::visit_edge(const Edge & e) {
+	edges_sequence.push_back(e);
+	return false;
+}
+
+bool SpecificFindTraverser::nodes_match(const std::vector<NodeID> v) const
+{
+	return v == nodes_sequence;
+}
+
+bool SpecificFindTraverser::edges_match(const std::vector<Edge> v) const
+{
+	return v == edges_sequence;
+}

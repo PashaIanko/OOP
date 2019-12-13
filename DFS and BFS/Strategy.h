@@ -28,6 +28,7 @@ public:
 
 private:
 	void dfs(Graph& g, std::shared_ptr<Node>& node);
+	bool have_to_exit = false;
 };
 
 class BFS_Strategy : public Strategy {
@@ -38,6 +39,7 @@ private:
 	void bfs(Graph& g, std::shared_ptr<Node>& node);
 private:
 	std::deque<std::shared_ptr<Node>> nodes_stack{};
+	bool have_to_exit = false;
 
 };
 

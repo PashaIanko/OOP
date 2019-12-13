@@ -61,3 +61,24 @@ private:
 	std::vector<NodeID> nodes_sequence {};
 	std::vector <Edge> edges_sequence{};
 };
+
+class SpecificFindTraverser : public Traverser {
+public:
+	SpecificFindTraverser() = delete;
+	~SpecificFindTraverser() = default;
+	SpecificFindTraverser(int data) : data_to_find(data) {};
+
+	virtual void begin() override {};
+	virtual void end() override {};
+	virtual bool visit_node(const Node&) override; //посещ узла
+	virtual bool visit_edge(const Edge&) override; //посещ ребра 
+
+	bool nodes_match(const std::vector<NodeID> v) const;
+	bool edges_match(const std::vector<Edge> v) const;
+
+private:
+	std::vector<NodeID> nodes_sequence{};
+	std::vector <Edge> edges_sequence{};
+	int data_to_find{};
+
+};

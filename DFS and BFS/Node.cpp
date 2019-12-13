@@ -60,14 +60,8 @@ NodeID Node::get_id() const {
 	return id;
 }
 
-/*bool Node::id_is_present(const NodeID & id)
+int Node::get_data() const
 {
-	auto it = std::find_if(
-		neighbour_ids.cbegin(),
-		neighbour_ids.cend(),
-		[id](const std::shared_ptr<NodeID> ptr) {
-			return ptr->operator==(id);
-		}
-	);
-	return it != neighbour_ids.cend();
-}*/
+	return data;
+}
+

@@ -24,15 +24,26 @@ void MyGraph::addNode(const Node & d, std::vector<NodeID> neighbours) {
 									  найти, и добавить к ней нового соседа*/
 		}
 	}
-	nodeArray.push_back(ptr);
+	nodeArray.insert(ptr);// .push_back(ptr);
 	/*двусвязный граф, проходимся по соседям из вектора
 						   добавляем к ним двунаправленную связь*/
 }
 
-void MyGraph::addNode(const Node & d){
+void MyGraph::addNode(const Node & node, const NodeID & connect_to) {
+	std::shared_ptr<Node> ptr(new Node(node));
+	std::shared_ptr<Node> neighbour = node_is_present(connect_to);
+	if (neighbour) {
+		ptr->set_neighbour(neighbour);
+		neighbour->set_neighbour(ptr);
+	}
+	nodeArray.insert(ptr);
+}
+
+
+void MyGraph::addNode(const Node & d) {
 	if (!node_is_present(d)) { /*если ноды с таким id нет на этот момент*/
 		std::shared_ptr<Node> ptr(new Node(d));
-		nodeArray.push_back(ptr);
+		nodeArray.insert(ptr);//push_back(ptr);
 	}
 }
 
