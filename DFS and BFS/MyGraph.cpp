@@ -4,6 +4,19 @@
 #include "Node.h"
 #include <algorithm>
 
+MyGraph::MyGraph(const std::vector<raw_data>& v) {
+	for (auto it : v) {
+		Node node(it);
+		size_t neighbours_size = it.neighbours.size();
+		if (neighbours_size) {
+			addNode(node, it.neighbours);
+		}
+		else {
+			addNode(node);
+		}
+	}
+}
+
 std::shared_ptr<Node> MyGraph::get_first_node() const
 {
 	if (nodeArray.empty()) {
@@ -15,12 +28,13 @@ std::shared_ptr<Node> MyGraph::get_first_node() const
 
 void MyGraph::addNode(const Node & d, std::vector<NodeID> neighbours) {
 	/*neighbours - с какими соседями я хочу связать добавляемую ноду*/
-	std::shared_ptr<Node> ptr(new Node(d));
+	/*std::shared_ptr<Node> ptr(new Node(d));*/
+	auto ptr = std::make_shared<Node>(d);
 	for (auto it : neighbours) {
 		std::shared_ptr<Node> neighbour = node_is_present(it);
 		if (neighbour) {/*если на данный момент в графе присутствует такая нода*/
-			ptr->set_neighbour(neighbour);
-			neighbour->set_neighbour(ptr);/*двунаправленный - эту ноду надо 
+			ptr->set_neighbour(neighbour.get());
+			neighbour->set_neighbour(ptr.get());/*двунаправленный - эту ноду надо 
 									  найти, и добавить к ней нового соседа*/
 		}
 	}
@@ -30,11 +44,12 @@ void MyGraph::addNode(const Node & d, std::vector<NodeID> neighbours) {
 }
 
 void MyGraph::addNode(const Node & node, const NodeID & connect_to) {
-	std::shared_ptr<Node> ptr(new Node(node));
+	/*std::shared_ptr<Node> ptr(new Node(node));*/
+	auto ptr = std::make_shared<Node>(node);
 	std::shared_ptr<Node> neighbour = node_is_present(connect_to);
 	if (neighbour) {
-		ptr->set_neighbour(neighbour);
-		neighbour->set_neighbour(ptr);
+		ptr->set_neighbour(neighbour.get());
+		neighbour->set_neighbour(ptr.get());
 	}
 	nodeArray.insert(ptr);
 }
@@ -42,7 +57,8 @@ void MyGraph::addNode(const Node & node, const NodeID & connect_to) {
 
 void MyGraph::addNode(const Node & d) {
 	if (!node_is_present(d)) { /*если ноды с таким id нет на этот момент*/
-		std::shared_ptr<Node> ptr(new Node(d));
+		/*std::shared_ptr<Node> ptr(new Node(d));*/
+		auto ptr = std::make_shared<Node>(d);
 		nodeArray.insert(ptr);//push_back(ptr);
 	}
 }

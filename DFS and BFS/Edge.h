@@ -4,7 +4,7 @@
 class Edge {
 public:
 	Edge() = delete;
-	Edge(std::shared_ptr<Node> from_, std::shared_ptr<Node> to_) : 
+	Edge(Node* from_, Node* to_) : 
 		from(from_), 
 		to(to_),
 		id_from(from_->get_id()), 
@@ -13,8 +13,8 @@ public:
 	Edge(const NodeID& from_, const NodeID& to_) : id_from(from_), id_to(to_) {}
 	bool operator==(const Edge& rhs) const;
 private:
-	std::shared_ptr<Node> from {};
-	std::shared_ptr<Node> to{};
+	Node* from {};
+	Node* to{};
 	NodeID id_from {};
 	NodeID id_to {};
 

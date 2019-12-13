@@ -5,6 +5,7 @@
 #include "Edge.h"
 
 
+
 class Graph {
 public:
 	virtual std::shared_ptr<Node> get_first_node() const = 0;

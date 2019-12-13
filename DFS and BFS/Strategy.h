@@ -27,7 +27,7 @@ public:
 	virtual void go(Graph& g, std::shared_ptr<Node> start_node) override; 
 
 private:
-	void dfs(Graph& g, std::shared_ptr<Node>& node);
+	void dfs(Graph& g, Node* node);
 	bool have_to_exit = false;
 };
 
@@ -36,9 +36,9 @@ public:
 	~BFS_Strategy() = default;
 	virtual void go(Graph& g, std::shared_ptr<Node> start_node) override;
 private:
-	void bfs(Graph& g, std::shared_ptr<Node>& node);
+	void bfs(Graph& g, Node* node);
 private:
-	std::deque<std::shared_ptr<Node>> nodes_stack{};
+	std::deque<Node*> nodes_stack{};
 	bool have_to_exit = false;
 
 };

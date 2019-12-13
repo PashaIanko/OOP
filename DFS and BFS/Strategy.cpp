@@ -31,10 +31,10 @@ bool Strategy::traverser_visit_edge(Edge& edge) {
 
 void DFS_Strategy::go(Graph & g, std::shared_ptr<Node> start_node) {
 	traverser_begin();
-	dfs(g, start_node);
+	dfs(g, start_node.get());
 }
 
-void DFS_Strategy::dfs(Graph & g, std::shared_ptr<Node>& node) {
+void DFS_Strategy::dfs(Graph & g, Node* node) {
 	if (have_to_exit)
 		return;
 
@@ -48,7 +48,7 @@ void DFS_Strategy::dfs(Graph & g, std::shared_ptr<Node>& node) {
 			return;
 		}
 
-		for (std::vector<std::shared_ptr<Node>>::iterator it = node->neighbours_begin();
+		for (std::vector<Node*>::iterator it = node->neighbours_begin();
 			it != node->neighbours_end();
 			++it) {
 
@@ -69,10 +69,10 @@ void DFS_Strategy::dfs(Graph & g, std::shared_ptr<Node>& node) {
 
 void BFS_Strategy::go(Graph & g, std::shared_ptr<Node> start_node) {
 	traverser_begin();
-	bfs(g, start_node);
+	bfs(g, start_node.get());
 }
 
-void BFS_Strategy::bfs(Graph & g, std::shared_ptr<Node>& node) {
+void BFS_Strategy::bfs(Graph & g, Node* node) {
 
 	bool visit_node_res = false;
 	if (!node->visited()) {
@@ -85,7 +85,7 @@ void BFS_Strategy::bfs(Graph & g, std::shared_ptr<Node>& node) {
 		return;
 	}
 
-	for (auto it = node->neighbours_begin(); it != node->neighbours_end(); ++it) {
+	for (std::vector<Node*>::iterator it = node->neighbours_begin(); it != node->neighbours_end(); ++it) {
 
 		if (have_to_exit)
 			return; /*выходы из рекурсий как метод посещения нашёл то что нужно*/
@@ -108,7 +108,7 @@ void BFS_Strategy::bfs(Graph & g, std::shared_ptr<Node>& node) {
 	/*рекурсивно перезапуск процедуры с указателем Node на ноду в верхушке стека
 	предварительно убрав этот элемент из стека*/
 	if (!nodes_stack.empty()) {
-		std::shared_ptr<Node> temp_node = nodes_stack.front();
+		Node* temp_node = nodes_stack.front();
 		nodes_stack.pop_front();
 		bfs(g, temp_node);
 	}

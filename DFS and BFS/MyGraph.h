@@ -1,5 +1,6 @@
 #pragma once
 #include "Graph.h"
+#include "RawData.h"
 #include <set>
 
 struct IDCompare {
@@ -8,9 +9,11 @@ struct IDCompare {
 	}
 };
 
+
 class MyGraph : public Graph {
 public:
 	MyGraph() = default;
+	MyGraph(const std::vector<raw_data>& v);
 	~MyGraph() = default;
 
 public:
