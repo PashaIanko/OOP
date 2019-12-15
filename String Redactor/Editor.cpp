@@ -1,0 +1,163 @@
+#include "pch.h"
+#include "Editor.h"
+#include <string>
+#include <iterator>
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <memory>
+
+
+
+Document::Document() {
+}
+
+Document::Document(const std::string & txt) {
+	this->assign(txt);
+}
+
+Document::Document(std::istream & in) {
+	std::string text(std::istreambuf_iterator<char>(in), {});
+	this->assign(text);
+}
+
+std::string Document::text()
+{
+	return std::string(*this);
+}
+
+void LineEditor::execute(std::shared_ptr<Command> cmd) {
+	
+	/*добавление и исполнение команды*/
+	if (RedoCmd* redo_ptr = dynamic_cast<RedoCmd*>(cmd.get())) {
+		redo();
+		return;
+	}
+	if (UndoCmd* unredo_ptr = dynamic_cast<UndoCmd*>(cmd.get())) {
+		undo();
+		return;
+	}
+
+	size_t cmds_sz = commands.size();
+	if (cmds_sz > 0 &&
+		cur < (cmds_sz - 1)) {
+		commands.erase((commands.begin() + cur), commands.end());
+	}
+	commands.push_back(cmd);
+	cmd->Execute();
+	cur++;
+}
+
+void LineEditor::undo() {
+	if (cur > 0) {
+		commands[--cur]->unExecute();
+	}
+}
+
+void LineEditor::redo() {
+	if (!commands.size()) {
+		return;
+	}
+	if (cur <= (commands.size() - 1)) {
+		commands[cur++]->Execute();
+	}
+}
+
+void CopyCmd::Execute() {
+	size_t ln = len();
+	if (ln > 0 && start < doc->length()) {
+		std::string cp = doc->substr(start, ln);
+		clipboard.push(std::move(cp));
+		executed = true;
+	}
+}
+
+void CopyCmd::unExecute() {
+	if (len() > 0 && executed) {
+		clipboard.pop();
+		executed = false;
+	}
+}
+
+size_t CopyCmd::len() const
+{
+	if (start >= end || end < 1) {
+		return 0;
+	}
+	return (end - start);
+}
+
+void PasteCmd::Execute() {
+	if (clipboard.size() > 0) {
+		pasted_str = clipboard.top();
+		if (idx >= doc->size()) {
+			original_size = doc->length();
+			doc->resize((idx), ' ');//doc->resize((idx), '\n');
+		}
+		doc->insert(idx, pasted_str);
+		clipboard.pop();
+		executed = true;
+	}
+}
+
+void PasteCmd::unExecute() {
+	if (executed) {
+		doc->erase(idx, pasted_str.length());
+		clipboard.push(pasted_str);
+		if (original_size > 0)
+			doc->resize(original_size);
+		executed = false;
+	}
+}
+
+void InsertCmd::Execute() {
+	if (!str.length()) {
+		return;
+	}
+	if (doc->size() <= idx) {
+		original_size = doc->length();
+		doc->resize((idx), ' ');//doc->resize((idx), '\n');
+	}
+	doc->insert(idx, str);
+	executed = true;
+}
+
+void InsertCmd::unExecute() {
+	if (!str.length()) {
+		return;
+	}
+	doc->erase(idx, str.length());
+	if (original_size > 0)
+		doc->resize(original_size);
+	executed = false;
+}
+
+size_t DelCmd::len() const
+{
+	if (start >= end || end == 0) {
+		return 0;
+	}
+	return (end - start);
+}
+
+void DelCmd::Execute() {
+	size_t ln = len();
+	if (ln > 0 && start < doc->length()) {
+		deleted = doc->substr(start, ln);
+		doc->erase(start, ln);
+		executed = true;
+	}
+}
+
+void DelCmd::unExecute() {
+	if (len() > 0 && deleted.length() > 0) {
+		doc->insert(start, deleted);
+		executed = false;
+	}
+}
+
+void UndoCmd::Execute() {}
+void UndoCmd::unExecute() {}
+
+void RedoCmd::Execute() {}
+void RedoCmd::unExecute() {}
