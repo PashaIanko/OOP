@@ -1,7 +1,11 @@
 #include "pch.h"
 #include <sstream>
 #include <algorithm>
+#include <memory>
 #include "CommandParser.h"
+#include "Editor.h"
+#include "Parameters.h"
+
 
 
 std::shared_ptr<Command> CmdParser::parse_cmd(const std::string &cmd) {
@@ -11,40 +15,30 @@ std::shared_ptr<Command> CmdParser::parse_cmd(const std::string &cmd) {
 
 	std::transform(cur_cmd.begin(), cur_cmd.end(), cur_cmd.begin(), ::tolower);
 
-	if (cur_cmd == "undo") {
-		/*Command* ptr = new UnRedoCmd();
-		return std::shared_ptr<Command>(ptr);*/
-		Command* ptr = new UndoCmd();
-		return std::shared_ptr<Command>(ptr);
-	}
-
-	if (cur_cmd == "redo") {
-		/*Command* ptr = new UnRedoCmd(true);
-		return std::shared_ptr<Command>(ptr);*/
-		Command* ptr = new RedoCmd();
-		return std::shared_ptr<Command>(ptr);
-	}
-
+	std::shared_ptr<Command> ptr = Command::create(cur_cmd);
 	if (cur_cmd == "copy" || cur_cmd == "delete") {
 		size_t idx1 = 0, idx2 = 0;
 		ss >> idx1;
 		ss.ignore(100, ',');
 		ss >> idx2;
-		Command *command = nullptr;
+		
+		Parameters params{ doc, "", idx1, idx2 };
 		if (cur_cmd == "copy") {
-			command = new CopyCmd(doc, idx1, idx2);
+			CopyCmd* cmd_ptr = static_cast<CopyCmd*>(ptr.get());
+			cmd_ptr->set_params(params);
 		}
 		else {
-			command = new DelCmd(doc, idx1, idx2);
+			DelCmd* cmd_ptr = static_cast<DelCmd*>(ptr.get());
+			cmd_ptr->set_params(params);
 		}
-		return std::shared_ptr<Command>(command);
 	}
 
 	if (cur_cmd == "paste") {
 		size_t idx = 0;
 		ss >> idx;
-		Command* ptr = new PasteCmd(doc, idx);
-		return std::shared_ptr<Command>(ptr);
+		Parameters params{ doc, "", idx, 0 };
+		PasteCmd* cmd_ptr = static_cast<PasteCmd*>(ptr.get());
+		cmd_ptr->set_params(params);
 	}
 
 	if (cur_cmd == "insert") {
@@ -61,10 +55,11 @@ std::shared_ptr<Command> CmdParser::parse_cmd(const std::string &cmd) {
 			return nullptr;
 		}
 		ss >> idx;
-		Command* ptr = new InsertCmd(doc, text_to_insert, idx);
-		return std::shared_ptr<Command>(ptr);
+		Parameters params{ doc, text_to_insert, idx, 0 };
+		InsertCmd* cmd_ptr = static_cast<InsertCmd*>(ptr.get());
+		cmd_ptr->set_params(params);
 	}
-	return nullptr;
+	return ptr;
 }
 
 CmdParser::CmdParser(std::istream & in, std::shared_ptr<Document> _doc) {
@@ -82,10 +77,6 @@ CmdParser::CmdParser(std::istream & in, std::shared_ptr<Document> _doc) {
 	}
 }
 
-std::vector<std::shared_ptr<Command>>::iterator CmdParser::begin() {
-	return commands.begin();
-}
-
-std::vector<std::shared_ptr<Command>>::iterator CmdParser::end() {
-	return commands.end();
+std::vector<std::shared_ptr<Command>> CmdParser::return_cmds() const {
+	return commands;
 }

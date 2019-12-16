@@ -16,9 +16,10 @@ TEST(COPY, FirstTest) {
 		"paste 0\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
+	editor.edit(parser.return_cmds());
+	/*for (auto cmd : parser) { 
 		editor.execute(cmd);
-	}
+	}*/
 	EXPECT_EQ(doc->text(), "aabc");
 }
 
@@ -31,9 +32,7 @@ TEST(COPY, CopyWholeTest) {
 		"paste 0\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abcabc");
 }
 
@@ -46,9 +45,7 @@ TEST(COPY, Copy_text_position_beyond_doc) {
 		"paste 3\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abcabc");
 }
 
@@ -61,9 +58,7 @@ TEST(COPY, Copy_text_position_beyond_doc_) {
 		"paste 5\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), std::string("abc  abc"));
 }
 
@@ -76,9 +71,7 @@ TEST(COPY, Copy_text_paste_at_right_boundary) {
 		"paste 3\n" /*вставка между указанной позицией и предыдущей*/
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), std::string("abcabc"));
 }
 
@@ -90,9 +83,7 @@ TEST(COPY, copy_from_empty) {
 		"copy 2"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "");
 }
 
@@ -104,9 +95,7 @@ TEST(PASTE, empty_buffer_to_paste) {
 		"paste 2"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "");
 }
 
@@ -118,9 +107,7 @@ TEST(INSERT, empty_doc_insert) {
 		"insert \"hello\", 0"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "hello");
 }
 
@@ -132,9 +119,7 @@ TEST(INSERT, empty_doc_insert_with_offset) {
 		"insert \"hello\", 2"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "  hello");
 }
 
@@ -146,9 +131,7 @@ TEST(INSERT, regular_doc) {
 		"insert \"hello\", 0"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "helloabc");
 }
 
@@ -160,9 +143,7 @@ TEST(INSERT, regular_doc_) {
 		"insert \"hello\", 1"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "ahellobc");
 }
 
@@ -174,9 +155,7 @@ TEST(INSERT, insert_beyond_boundaries) {
 		"insert \"hello\", 3"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abchello");
 }
 
@@ -188,9 +167,7 @@ TEST(INSERT, insert_beyond_boundaries_) {
 		"insert \"hello\", 4"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc hello");
 }
 
@@ -202,9 +179,7 @@ TEST(INSERT, insert_nothing) {
 		"insert \"\", 0"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc");
 }
 
@@ -216,9 +191,7 @@ TEST(INSERT, insert_nothing_beyond_the_line) {
 		"insert \"\", 3"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc");
 }
 
@@ -230,9 +203,7 @@ TEST(INSERT, insert_nothing_beyond_the_line_with_gap) {
 		"insert \"\", 4"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc");
 }
 
@@ -244,9 +215,7 @@ TEST(INSERT, insert_at_negative_position) {
 		"insert \"\", -4"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc");
 }
 
@@ -258,9 +227,7 @@ TEST(DELETE, empty_doc) {
 		"delete 2, 5"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "");
 }
 
@@ -272,9 +239,7 @@ TEST(DELETE, indexes_beyond) {
 		"delete 0, 5"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "");
 }
 
@@ -289,9 +254,7 @@ TEST(DELETE, several_deletes) {
 		"delete 4, 5\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "hsisa long string");
 }
 
@@ -303,9 +266,7 @@ TEST(DELETE, regular) {
 		"delete 0, 1"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "bc");
 }
 
@@ -317,9 +278,7 @@ TEST(DELETE, start_higher_than_end) {
 		"delete 2, 1"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc");
 }
 
@@ -331,9 +290,7 @@ TEST(DELETE, regular_) {
 		"delete 3, 7"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc");
 }
 
@@ -346,9 +303,7 @@ TEST(UNDO, regular_) {
 		"undo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abc abc");
 }
 
@@ -362,9 +317,7 @@ TEST(REDO, regular) {
 		"redo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "bcd");
 }
 
@@ -380,9 +333,7 @@ TEST(UNDO, more_than_commands) {
 		"undo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abcd");
 }
 
@@ -398,9 +349,7 @@ TEST(UNDO, last_two_commands_denied) {
 		"undo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "bcd");
 }
 
@@ -414,9 +363,7 @@ TEST(UNDO, no_commands_to_undo) {
 		"undo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "abcd");
 }
 
@@ -431,9 +378,7 @@ TEST(MIXED_CMDS, redo_undo) {
 		"redo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "bhellocd");
 }
 
@@ -449,9 +394,7 @@ TEST(MIXED_CMDS, delete_undo_redo) {
 		"redo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "\ns is my new OOP program!");
 }
 
@@ -465,9 +408,7 @@ TEST(MIXED_CMDS, insert_undo_redo) {
 		"redo\n"
 	);
 	CmdParser parser(ss, doc);
-	for (auto cmd : parser) {
-		editor.execute(cmd);
-	}
+	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "Hello!\nThis is my new program!");
 }
 

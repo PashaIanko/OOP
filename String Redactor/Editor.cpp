@@ -6,7 +6,7 @@
 #include <vector>
 #include <stack>
 #include <memory>
-
+#include "CommandParser.h"
 
 
 Document::Document() {
@@ -24,6 +24,18 @@ Document::Document(std::istream & in) {
 std::string Document::text()
 {
 	return std::string(*this);
+}
+
+/*void LineEditor::edit(const CmdParser& commands) {
+	for (auto cmd : commands) {
+		execute(cmd);
+	}
+}*/
+
+void LineEditor::edit(const std::vector<std::shared_ptr<Command>>& cmds){
+	for (auto cmd : cmds) {
+		execute(cmd);
+	}
 }
 
 void LineEditor::execute(std::shared_ptr<Command> cmd) {
@@ -72,6 +84,12 @@ void CopyCmd::Execute() {
 	}
 }
 
+void CopyCmd::set_params(const Parameters & params) {
+	doc = params.doc.lock();
+	start = params.from;
+	end = params.to;
+}
+
 void CopyCmd::unExecute() {
 	if (len() > 0 && executed) {
 		string_buffer.pop();
@@ -85,6 +103,9 @@ size_t CopyCmd::len() const
 		return 0;
 	}
 	return (end - start);
+}
+
+PasteCmd::PasteCmd() {
 }
 
 void PasteCmd::Execute() {
@@ -110,6 +131,21 @@ void PasteCmd::unExecute() {
 	}
 }
 
+void PasteCmd::set_params(const Parameters & params) {
+	doc = params.doc.lock();
+	idx = params.from;
+}
+
+InsertCmd::InsertCmd(){
+}
+
+void InsertCmd::set_params(const Parameters & params)
+{
+	doc = params.doc.lock();
+	idx = params.from;
+	str = params.str;
+}
+
 void InsertCmd::Execute() {
 	if (!str.length()) {
 		return;
@@ -132,12 +168,21 @@ void InsertCmd::unExecute() {
 	executed = false;
 }
 
+DelCmd::DelCmd(){
+}
+
 size_t DelCmd::len() const
 {
 	if (start >= end || end == 0) {
 		return 0;
 	}
 	return (end - start);
+}
+
+void DelCmd::set_params(const Parameters & params) {
+	doc = params.doc.lock();
+	start = params.from;
+	end = params.to;
 }
 
 void DelCmd::Execute() {
@@ -161,3 +206,27 @@ void UndoCmd::unExecute() {}
 
 void RedoCmd::Execute() {}
 void RedoCmd::unExecute() {}
+
+std::shared_ptr<Command> Command::create(const std::string command)
+{
+	Command* ptr = nullptr;
+	if (command == "undo") {
+		ptr = new UndoCmd();
+	}
+	if (command == "redo") {
+		ptr = new RedoCmd();
+	}
+	if (command == "copy") {
+		ptr = new CopyCmd();
+	}
+	if (command == "paste") {
+		ptr = new PasteCmd();
+	}
+	if (command == "insert") {
+		ptr = new InsertCmd();
+	}
+	if (command == "delete") {
+		ptr = new DelCmd();
+	}
+	return std::shared_ptr<Command>(ptr);
+}
