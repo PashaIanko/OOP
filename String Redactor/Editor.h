@@ -9,7 +9,7 @@
 
 
 namespace {
-	std::stack<std::string> clipboard;
+	std::stack<std::string> string_buffer;
 }
 
 class Document : public std::string {
@@ -64,7 +64,7 @@ public:
 
 private:
 	std::vector<std::shared_ptr<Command>> commands;
-	size_t cur = 0;
+	size_t current_command = 0;
 };
 
 

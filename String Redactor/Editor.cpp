@@ -40,17 +40,17 @@ void LineEditor::execute(std::shared_ptr<Command> cmd) {
 
 	size_t cmds_sz = commands.size();
 	if (cmds_sz > 0 &&
-		cur < (cmds_sz - 1)) {
-		commands.erase((commands.begin() + cur), commands.end());
+		current_command < (cmds_sz - 1)) {
+		commands.erase((commands.begin() + current_command), commands.end());
 	}
 	commands.push_back(cmd);
 	cmd->Execute();
-	cur++;
+	current_command++;
 }
 
 void LineEditor::undo() {
-	if (cur > 0) {
-		commands[--cur]->unExecute();
+	if (current_command > 0) {
+		commands[--current_command]->unExecute();
 	}
 }
 
@@ -58,8 +58,8 @@ void LineEditor::redo() {
 	if (!commands.size()) {
 		return;
 	}
-	if (cur <= (commands.size() - 1)) {
-		commands[cur++]->Execute();
+	if (current_command <= (commands.size() - 1)) {
+		commands[current_command++]->Execute();
 	}
 }
 
@@ -67,14 +67,14 @@ void CopyCmd::Execute() {
 	size_t ln = len();
 	if (ln > 0 && start < doc->length()) {
 		std::string cp = doc->substr(start, ln);
-		clipboard.push(std::move(cp));
+		string_buffer.push(std::move(cp));
 		executed = true;
 	}
 }
 
 void CopyCmd::unExecute() {
 	if (len() > 0 && executed) {
-		clipboard.pop();
+		string_buffer.pop();
 		executed = false;
 	}
 }
@@ -88,14 +88,14 @@ size_t CopyCmd::len() const
 }
 
 void PasteCmd::Execute() {
-	if (clipboard.size() > 0) {
-		pasted_str = clipboard.top();
+	if (string_buffer.size() > 0) {
+		pasted_str = string_buffer.top();
 		if (idx >= doc->size()) {
 			original_size = doc->length();
 			doc->resize((idx), ' ');//doc->resize((idx), '\n');
 		}
 		doc->insert(idx, pasted_str);
-		clipboard.pop();
+		string_buffer.pop();
 		executed = true;
 	}
 }
@@ -103,7 +103,7 @@ void PasteCmd::Execute() {
 void PasteCmd::unExecute() {
 	if (executed) {
 		doc->erase(idx, pasted_str.length());
-		clipboard.push(pasted_str);
+		string_buffer.push(pasted_str);
 		if (original_size > 0)
 			doc->resize(original_size);
 		executed = false;

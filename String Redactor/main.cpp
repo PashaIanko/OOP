@@ -96,7 +96,7 @@ TEST(COPY, copy_from_empty) {
 	EXPECT_EQ(doc->text(), "");
 }
 
-TEST(PASTE, empty_clipboard_to_paste) {
+TEST(PASTE, empty_buffer_to_paste) {
 	std::string str = "";
 	auto doc = std::make_shared<Document>(str);
 	LineEditor editor;
