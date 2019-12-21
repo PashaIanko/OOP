@@ -172,7 +172,7 @@ f(double* x, int n)
 
 /* given a point, look for a better one nearby, one coord at a time */
 double
-best_nearby(double* delta, double* point, double prevbest, int nvars)
+best_nearby(double* delta, double* point, double prevbest, int nvars, double(*f)(double*, int))
 //double	   delta[VARS], point[VARS];
 //double	   prevbest;
 //int		   nvars;
@@ -205,7 +205,8 @@ best_nearby(double* delta, double* point, double prevbest, int nvars)
 
 
 int
-hooke(int nvars, double* startpt, double* endpt, double rho, double epsilon, int itermax)
+hooke(int nvars, double* startpt, double* endpt, double rho, double epsilon, int itermax, 
+	double(*f)(double*, int)) //добавил указатель на функцию
 //double	   startpt[VARS], endpt[VARS];
 //int		   nvars, itermax;
 //double	   rho, epsilon;
@@ -236,7 +237,7 @@ hooke(int nvars, double* startpt, double* endpt, double rho, double epsilon, int
 		for (i = 0; i < nvars; i++) {
 			newx[i] = xbefore[i];
 		}
-		newf = best_nearby(delta, newx, fbefore, nvars);
+		newf = best_nearby(delta, newx, fbefore, nvars, f);
 		/* if we made some improvements, pursue that direction */
 		keep = 1;
 		while ((newf < fbefore) && (keep == 1)) {
@@ -253,7 +254,7 @@ hooke(int nvars, double* startpt, double* endpt, double rho, double epsilon, int
 				newx[i] = newx[i] + newx[i] - tmp;
 			}
 			fbefore = newf;
-			newf = best_nearby(delta, newx, fbefore, nvars);
+			newf = best_nearby(delta, newx, fbefore, nvars, f);
 			/* if the further (optimistic) move was bad.... */
 			if (newf >= fbefore)
 				break;

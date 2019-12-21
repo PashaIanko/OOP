@@ -16,9 +16,11 @@ void C_StyleStrategy::calc() { /*support the C-style
 		calc_parameters.cooked_data,
 		calc_parameters.rho,
 		calc_parameters.epsilon,
-		calc_parameters.iterations_limit
+		calc_parameters.iterations_limit,
+		calc_parameters.func_ptr
 	);
-	numb_of_iterations = jj;
+	set_iterations_numb(jj);
+	//numb_of_iterations = jj;
 }
 
 /*void C_StyleStrategy::set_params(const Ctor_Params & params) {
