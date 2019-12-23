@@ -4,30 +4,6 @@
 
 
 
-/*class step_incrementer {
-public:
-	step_incrementer(double converge_param_) : converge_param(converge_param_) {}
-	bool operator() (const double arg) {
-		double res = arg * converge_param;
-		if (res == 0.0) {
-			return converge_param;
-		}
-		return res;
-	}
-private:
-	double converge_param;
-};*/
-
-/*class step_multiplier {
-public:
-	step_multiplier(double converge_param_) : converge_param(converge_param_) {}
-	bool operator() (const double arg) {
-		return arg * converge_param;
-	}
-private:
-	double converge_param;
-};*/
-
 HJ_Calculator::HJ_Calculator(const Ctor_Params & calc_params) : 
 	domain_dimensions(calc_params.dimensions),
 	convergence_param(calc_params.rho),
@@ -52,43 +28,56 @@ std::vector<double> HJ_Calculator::return_min_coordinates() const
 }
 
 size_t HJ_Calculator::HJ_calc(){
-	initialize_coordinates();
+
+	coordinates_prev = raw_data;
+	coordinates_next = raw_data;
+
 	double conv_param = convergence_param;
-	std::transform(
-		raw_data.begin(),
-		raw_data.end(), 
-		std::back_inserter(deltas), 
-		[conv_param](const double arg) { // Ранее было через функтор, некорректно почему-то std::back_inserter(deltas), step_incrementer(convergence_param));
-		double res = arg * conv_param;
-		if (res == 0.0) {
-			return conv_param;
+
+	double acc = 10e-7;
+	for (auto val : raw_data) {
+		double res = fabs(val * convergence_param);
+		if (fabs(res - 0.0) < acc) {
+			res = convergence_param;
 		}
-		return res;
-	});
+		deltas.push_back(res);
+	}
 		
 	
-	initialize_func_values();
-	set_iterations_numb(0);
+	func_value_prev = func(&coordinates_next[0], domain_dimensions);
+	func_value_next = func_value_prev;
 
-
+	size_t iterations_made = 0;
 	double steplength = convergence_param;
-	while (!exceeded_iter_limit() && !step_less_accuracy(steplength)) {
+	while (iterations_made < iterations_lim && 
+		steplength > accuracy)
+	{
 		iterations_made++;
 		coordinates_next = coordinates_prev;
+
+		/* find best new point, one coord at a time */
 		func_value_next = best_nearby(func_value_prev);
 
+
+		/* if we made some improvements, pursue that direction */
 		bool keep_moving = true; //line: keep = 1;
 		while ((func_value_next < func_value_prev) && keep_moving) {
+			/* firstly, arrange the sign of delta[] */
 			set_deltas_signs();
 			refresh_coordinates();
 
 			func_value_prev = func_value_next;
 			func_value_next = best_nearby(func_value_prev);
 
+			/* if the further (optimistic) move was bad.... */
 			if (func_value_next > func_value_prev) {
 				break;
 			}
 
+			/* make sure that the differences between the new */
+			/* and the old points are due to actual */
+			/* displacements; beware of roundoff errors that */
+			/* might cause newf < fbefore */
 			keep_moving = check_for_foundoff_errs();
 		}
 		if (steplength >= accuracy && func_value_next >= func_value_prev) {
@@ -96,7 +85,7 @@ size_t HJ_Calculator::HJ_calc(){
 			std::transform(deltas.begin(), deltas.end(), deltas.begin(), 
 				[conv_param](const double arg) {
 					return arg * conv_param;
-				});/*step_multiplier(convergence_param)*/
+				});
 		}
 	}
 	coordinates_next = coordinates_prev;
@@ -104,36 +93,8 @@ size_t HJ_Calculator::HJ_calc(){
 
 }
 
-void HJ_Calculator::initialize_coordinates() {
-	coordinates_prev = raw_data;
-	coordinates_next = raw_data;
-}
-
-void HJ_Calculator::initialize_func_values() {
-	func_value_prev = func(&coordinates_next[0], domain_dimensions);
-	func_value_next = func_value_prev;
-}
-
-void HJ_Calculator::set_iterations_numb(size_t arg) {
-	iterations_made = arg;
-}
-
-bool HJ_Calculator::exceeded_iter_limit() const {
-	return iterations_made > iterations_lim; /*Да, знаю,
-											 знаковое с беззнаковым, это плохо,
-											 но в исходном коде у них лимит итераций был интовый,
-											 я конструируя объект, должен преобразовывать интовое в сайз т?
-											 (Ctor_Params хранит лимит как инт, для совместимости со старой версией.
-											 А новый ООП объект - в конструкторе инт в сайз т преобразовать?*/
-}
-
-bool HJ_Calculator::step_less_accuracy(const double steplength) const {
-	return steplength < accuracy;
-}
-
 double HJ_Calculator::best_nearby(const double func_val) {
 	double min_func_val = func_val;
-	//double cur_func_val;
 
 	std::vector<double> coordinates = coordinates_next;
 
