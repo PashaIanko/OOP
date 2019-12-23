@@ -38,11 +38,12 @@ inline bool TestWrapper<T>::minimum_match(const std::vector<double>& min_coordin
 
 template<>
 inline bool TestWrapper<C_StyleStrategy>::minimum_match(const std::vector<double>& min_coordinates) const {
-	double* cooked_ptr = calc_parameters.cooked_data;
-	if (cooked_ptr != nullptr) {
-		for (size_t i = 0; i < calc_parameters.dimensions; i++) {
-			EXPECT_NEAR(cooked_ptr[i], min_coordinates[i], check_accuracy);
-		}
+	C_StyleStrategy* ptr = static_cast<C_StyleStrategy*>(calc_strategy.get());
+	const std::vector<double>& calculated_coord = ptr->get_res();
+	size_t i = 0;
+	for (auto it : min_coordinates) {
+		EXPECT_NEAR(it, calculated_coord[i], check_accuracy);
+		i++;
 	}
 	return true;
 }
@@ -52,10 +53,9 @@ inline bool TestWrapper<OOP_StyleStrategy>::minimum_match(const std::vector<doub
 	OOP_StyleStrategy* ptr = static_cast<OOP_StyleStrategy*>(calc_strategy.get());
 	
 	std::vector<double> calculated_coord = ptr->get_calculated_min_coord();
-	EXPECT_EQ(calculated_coord.size(), expect_min_coordinates.size());
 	size_t i = 0;
-	for (auto it: calculated_coord) {
-		EXPECT_NEAR(it, expect_min_coordinates[i], check_accuracy);
+	for (auto it: expect_min_coordinates) {
+		EXPECT_NEAR(it, calculated_coord[i], check_accuracy);
 		i++;
 	}
 	return true;

@@ -11,11 +11,8 @@ HJ_Calculator::HJ_Calculator(const Ctor_Params & calc_params) :
 	iterations_lim(calc_params.iterations_limit),
 	func(calc_params.func_ptr)
 {
-	if (calc_params.raw_data) {
-		raw_data.assign(calc_params.raw_data, calc_params.raw_data + calc_params.dimensions);
-	}
-	if (calc_params.cooked_data) {
-		cooked_data.assign(calc_params.cooked_data, calc_params.cooked_data + calc_params.data_size);
+	if (calc_params.raw_data.size()) {
+		raw_data = calc_params.raw_data;
 	}
 }
 

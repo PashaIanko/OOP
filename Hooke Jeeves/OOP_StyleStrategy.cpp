@@ -4,7 +4,7 @@
 
 
 OOP_StyleStrategy::OOP_StyleStrategy(const Ctor_Params & params) {
-	this->calc_parameters = params;
+	calc_parameters = params;
 }
 
 void OOP_StyleStrategy::calc(){
@@ -16,7 +16,7 @@ void OOP_StyleStrategy::calc(){
 	calculated_min_coord = calculator.return_min_coordinates();
 }
 
-std::vector<double> OOP_StyleStrategy::get_calculated_min_coord() const
+const std::vector<double>& OOP_StyleStrategy::get_calculated_min_coord() const
 {
 	if (calculated_min_coord.size()) {
 		return calculated_min_coord;

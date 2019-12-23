@@ -20,23 +20,21 @@ TEST(GeneralFunctions, RosenbrocksFunc) {
 	double			RHO_BEGIN = 0.5;
 	double			EPSMIN = 1E-6;
 	int				IMAX = 5000;
-
-	double			startpt[SIZE], endpt[SIZE];
 	int				domain_dimensions = 2; //f(x,y) , f:R^2->R^1
-	
+	std::vector<double> startpt(SIZE, 0);
+
 	startpt[0] = -1.2; /*предположит. координаты минимума*/
 	startpt[1] = 1.0;
 
 	Ctor_Params params
 	{
 		domain_dimensions,
-		startpt,
-		endpt,
 		RHO_BEGIN,
 		EPSMIN,
 		IMAX,
 		SIZE,
-		&RosenbrocksFunc
+		&RosenbrocksFunc,
+		startpt,
 	};
 
 	TestWrapper<cur_strategy> t(params);
@@ -51,20 +49,19 @@ TEST(GeneralFunctions, parabolic_func) {
 	double			RHO_BEGIN = 0.5;
 	double			EPSMIN = 1E-6;
 	int				IMAX = 5000;
-	double			startpt[SIZE], endpt[SIZE];
 	int				domain_dimension = 1; //simple f: R^1->R^1 (f(x))
+	std::vector<double> startpt(SIZE, 0);
 
 	startpt[0] = 0.5;
 	Ctor_Params params
 	{
 		domain_dimension,
-		startpt,
-		endpt,
 		RHO_BEGIN,
 		EPSMIN,
 		IMAX,
 		SIZE,
-		&ParabolicFunc
+		&ParabolicFunc,
+		startpt,
 	};
 
 	TestWrapper<cur_strategy> t(params);
@@ -80,20 +77,20 @@ TEST(GeneralFunctions, shifted_up_parabolic_func) {
 	double			RHO_BEGIN = 0.5;
 	double			EPSMIN = 1E-6;
 	int				IMAX = 5000;
-	double			startpt[SIZE], endpt[SIZE];
+	
 	int				domain_dimension = 1; //simple f: R^1->R^1 (f(x))
+	std::vector<double> startpt(SIZE, 0);
 
 	startpt[0] = 0.5;
 	Ctor_Params params
 	{
 		domain_dimension,
-		startpt,
-		endpt,
 		RHO_BEGIN,
 		EPSMIN,
 		IMAX,
 		SIZE,
-		&Shifted_up_ParabolicFunc
+		&Shifted_up_ParabolicFunc,
+		startpt,
 	};
 
 	TestWrapper<cur_strategy> t(params);
@@ -109,20 +106,21 @@ TEST(GeneralFunctions, shifted_left_parabolic_func) {
 	double			RHO_BEGIN = 0.5;
 	double			EPSMIN = 1E-6;
 	int				IMAX = 5000;
-	double			startpt[SIZE], endpt[SIZE];
+	
 	int				domain_dimension = 1; //simple f: R^1->R^1 (f(x))
+
+	std::vector<double> startpt(SIZE, 0);
 
 	startpt[0] = 0.5;
 	Ctor_Params params
 	{
 		domain_dimension,
-		startpt,
-		endpt,
 		RHO_BEGIN,
 		EPSMIN,
 		IMAX,
 		SIZE,
-		&Shifted_left_ParabolicFunc
+		&Shifted_left_ParabolicFunc,
+		startpt,
 	};
 
 	TestWrapper<cur_strategy> t(params);
@@ -138,22 +136,23 @@ TEST(GeneralFunctions, Rotated_shifted_paraboloid) {
 	double			RHO_BEGIN = 0.5;
 	double			EPSMIN = 1E-6;
 	int				IMAX = 5000;
-	double			startpt[SIZE], endpt[SIZE];
+	
 	int				domain_dimension = 2; //simple f: R^2->R^1 (f(x)) /*чашка*/
 
+	std::vector<double> startpt(SIZE, 0);
+	
 	startpt[0] = 0.5;
 	startpt[1] = 0.5;
 
 	Ctor_Params params
 	{
 		domain_dimension,
-		startpt,
-		endpt,
 		RHO_BEGIN,
 		EPSMIN,
 		IMAX,
 		SIZE,
-		&Shifted_Rotated_Paraboloid
+		&Shifted_Rotated_Paraboloid,
+		startpt,
 	};
 
 	TestWrapper<cur_strategy> t(params);
