@@ -2,6 +2,8 @@
 #include "C_StyleStrategy.h"
 #include "OOP_StyleStrategy.h"
 #include "gtest\gtest.h"
+#include <vector>
+#include <iterator>
 
 template<typename T>
 class TestWrapper {
@@ -41,6 +43,20 @@ inline bool TestWrapper<C_StyleStrategy>::minimum_match(const std::vector<double
 		for (size_t i = 0; i < calc_parameters.dimensions; i++) {
 			EXPECT_NEAR(cooked_ptr[i], min_coordinates[i], check_accuracy);
 		}
+	}
+	return true;
+}
+
+template<>
+inline bool TestWrapper<OOP_StyleStrategy>::minimum_match(const std::vector<double>& expect_min_coordinates) const {
+	OOP_StyleStrategy* ptr = static_cast<OOP_StyleStrategy*>(calc_strategy.get());
+	
+	std::vector<double> calculated_coord = ptr->get_calculated_min_coord();
+	EXPECT_EQ(calculated_coord.size(), expect_min_coordinates.size());
+	size_t i = 0;
+	for (auto it: calculated_coord) {
+		EXPECT_NEAR(it, expect_min_coordinates[i], check_accuracy);
+		i++;
 	}
 	return true;
 }

@@ -4,7 +4,7 @@
 
 
 
-class step_incrementer {
+/*class step_incrementer {
 public:
 	step_incrementer(double converge_param_) : converge_param(converge_param_) {}
 	bool operator() (const double arg) {
@@ -16,9 +16,9 @@ public:
 	}
 private:
 	double converge_param;
-};
+};*/
 
-class step_multiplier {
+/*class step_multiplier {
 public:
 	step_multiplier(double converge_param_) : converge_param(converge_param_) {}
 	bool operator() (const double arg) {
@@ -26,7 +26,7 @@ public:
 	}
 private:
 	double converge_param;
-};
+};*/
 
 HJ_Calculator::HJ_Calculator(const Ctor_Params & calc_params) : 
 	domain_dimensions(calc_params.dimensions),

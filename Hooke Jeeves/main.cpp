@@ -13,7 +13,7 @@
 #include "Functions.h"
 
 
-using cur_strategy = C_StyleStrategy;//OOP_StyleStrategy;//C_StyleStrategy;
+using cur_strategy = OOP_StyleStrategy;//C_StyleStrategy;
 
 TEST(GeneralFunctions, RosenbrocksFunc) {
 	const size_t	SIZE = 250;
@@ -130,6 +130,37 @@ TEST(GeneralFunctions, shifted_left_parabolic_func) {
 
 	size_t expect_iterations_numb = 19;
 	EXPECT_TRUE(t.minimum_match({ -5.0 })); /*минимум параболы смещённой по оси x*/
+	EXPECT_TRUE(t.numb_of_iterations_match(expect_iterations_numb));
+}
+
+TEST(GeneralFunctions, Rotated_shifted_paraboloid) {
+	const size_t	SIZE = 250;
+	double			RHO_BEGIN = 0.5;
+	double			EPSMIN = 1E-6;
+	int				IMAX = 5000;
+	double			startpt[SIZE], endpt[SIZE];
+	int				domain_dimension = 2; //simple f: R^2->R^1 (f(x)) /*чашка*/
+
+	startpt[0] = 0.5;
+	startpt[1] = 0.5;
+
+	Ctor_Params params
+	{
+		domain_dimension,
+		startpt,
+		endpt,
+		RHO_BEGIN,
+		EPSMIN,
+		IMAX,
+		SIZE,
+		&Shifted_Rotated_Paraboloid
+	};
+
+	TestWrapper<cur_strategy> t(params);
+	t.calc();
+
+	size_t expect_iterations_numb = 19;
+	EXPECT_TRUE(t.minimum_match({ -5.0, -15.0 })); /*минимум параболоида смещённого по осям x y*/
 	EXPECT_TRUE(t.numb_of_iterations_match(expect_iterations_numb));
 }
 

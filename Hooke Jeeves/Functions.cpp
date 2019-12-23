@@ -35,3 +35,15 @@ double Shifted_left_ParabolicFunc(double * x, int)
 	}
 	return 0;
 }
+
+double Shifted_Rotated_Paraboloid(double * x, int)
+{
+	const double x_shift = 5.0;
+	const double y_shift = 15.0;
+
+	if (x != nullptr) { //x^2 + y^2
+		return (x[0] + x_shift)*(x[0] + x_shift) +
+				(x[1] + y_shift)*(x[1] + y_shift);
+	}
+	return 0;
+}
