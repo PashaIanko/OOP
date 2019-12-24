@@ -92,16 +92,30 @@ double HJ_Calculator::best_nearby(const double func_val) {
 
 	/*modify - add little step from the point - z[i] = point[i] + delta[i]*/
 	for (size_t i = 0; i < domain_dimensions; ++i) {
-		bool reached_less_val = increment_and_compare (coordinates, coordinates_next[i], 
-														deltas[i], i, min_func_val);
+		
+
+		/*Вставленный обратно кусок из increment and compare()*/
+		bool reached_less_val = false;
+		coordinates[i] = coordinates_next[i] + deltas[i];
+		double cur_func_val = func(&coordinates[0], domain_dimensions);
+		if (cur_func_val < min_func_val) {
+			reached_less_val = true;
+		}
+
 		if (reached_less_val) {
 			min_func_val = func(&coordinates[0], domain_dimensions);
 		}
 
 		else {
+			/*ещё раз вставленный кусок increment_and_compare*/
 			deltas[i] = 0.0 - deltas[i];
-			reached_less_val = increment_and_compare (coordinates, coordinates_next[i],	
-														deltas[i], i, min_func_val	);
+			reached_less_val = false;
+			coordinates[i] = coordinates_next[i] + deltas[i];
+			double cur_func_val = func(&coordinates[0], domain_dimensions);
+			if (cur_func_val < min_func_val) {
+				reached_less_val = true;
+			}
+			
 			if (reached_less_val) {
 				min_func_val = func(&coordinates[0], domain_dimensions);
 			}

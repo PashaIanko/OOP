@@ -36,7 +36,6 @@ inline size_t TestWrapper<T>::get_iters() const {
 }
 
 template<typename T>
-inline const std::vector<double>& TestWrapper<T>::get_res() const
-{
+inline const std::vector<double>& TestWrapper<T>::get_res() const {
 	return calc_strategy->get_res();
 }
