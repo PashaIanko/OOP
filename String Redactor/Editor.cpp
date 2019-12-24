@@ -46,7 +46,36 @@ std::string Document::extract_buf_top() {
 }
 
 size_t Document::buf_size() const {
-	return buffer.size();
+	return buffer_.length();
+}
+
+void Document::put_to_buf(const std::string & str) {
+	buffer_ += str;
+}
+
+void Document::insert_in_buf(const std::string & str, const size_t idx) {
+	buffer_.insert(idx, str);
+}
+
+void Document::remove_from_buf(const size_t from, const size_t to) {
+	if (to >= from && to <= buffer_.length()) {
+		buffer_.erase(from, to);
+	}
+}
+
+std::string Document::extract_buf_substr(const size_t from, const size_t to) {
+	std::string substr = buffer_.substr(from, to);
+	buffer_.erase(from, to);
+	return substr;
+}
+
+void Document::set_copy_idxs(const std::pair<size_t, size_t>& p){
+	last_copy_idx = p;
+}
+
+std::pair<size_t, size_t> Document::get_copied_idxs() const
+{
+	return last_copy_idx;
 }
 
 
@@ -97,7 +126,10 @@ void CopyCmd::Execute() {
 	size_t ln = len();
 	if (ln > 0 && start < doc->length()) {
 		std::string substring = doc->substr(start, ln);
-		doc->push_in_buf(std::move(substring));
+		/*doc->push_in_buf(std::move(substring));*/
+
+		doc->put_to_buf(substring);
+		doc->set_copy_idxs({ start, end });
 		executed = true;
 	}
 }
@@ -110,7 +142,7 @@ void CopyCmd::set_params(const Parameters & params) {
 
 void CopyCmd::unExecute() {
 	if (len() > 0 && executed) {
-		doc->pop_from_buf();
+		doc->extract_buf_substr(start,end);
 		executed = false;
 	}
 }
@@ -128,22 +160,23 @@ PasteCmd::PasteCmd() {
 
 void PasteCmd::Execute() {
 	if (doc->buf_size()) {
-		pasted_str = doc->extract_buf_top();
-
+		std::pair<size_t, size_t> from_to = doc->get_copied_idxs();
+		pasted_str = doc->extract_buf_substr(from_to.first, from_to.second);
 		if (idx >= doc->size()) {
 			original_size = doc->length();
 			doc->resize((idx), ' ');
 		}
 		doc->insert(idx, pasted_str);
-		doc->pop_from_buf();
 		executed = true;
 	}
 }
 
 void PasteCmd::unExecute() {
 	if (executed) {
+		std::string substr = doc->substr(idx, idx + pasted_str.length());
 		doc->erase(idx, pasted_str.length());
-		doc->push_in_buf(pasted_str);
+		std::pair<size_t, size_t> from_to = doc->get_copied_idxs();
+		doc->insert_in_buf(substr, from_to.first);
 		if (original_size > 0)
 			doc->resize(original_size);
 		executed = false;

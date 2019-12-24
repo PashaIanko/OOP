@@ -22,8 +22,17 @@ public:
 	std::string extract_buf_top();
 	size_t buf_size() const;
 
+	void put_to_buf(const std::string& str);
+	void insert_in_buf(const std::string& str, const size_t idx);
+	void remove_from_buf(const size_t from, const size_t to);
+	std::string extract_buf_substr(const size_t from, const size_t to);
+	void set_copy_idxs(const std::pair<size_t, size_t> & p);
+	std::pair<size_t, size_t> get_copied_idxs() const;
+
 private:
 	std::stack<std::string> buffer{}; /*история изменений*/
+	std::string buffer_{};
+	std::pair<size_t, size_t> last_copy_idx{};
 };
 
 
