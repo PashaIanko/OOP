@@ -29,38 +29,12 @@ std::string Document::text()
 	return std::string(*this);
 }
 
-void Document::push_in_buf(std::string && str) {
-	buffer.push(str);
-}
-
-void Document::push_in_buf(const std::string & str) {
-	buffer.push(str);
-}
-
-void Document::pop_from_buf() {
-	buffer.pop();
-}
-
-std::string Document::extract_buf_top() {
-	return buffer.top();
-}
-
 size_t Document::buf_size() const {
 	return buffer_.length();
 }
 
 void Document::put_to_buf(const std::string & str) {
 	buffer_ += str;
-}
-
-void Document::insert_in_buf(const std::string & str, const size_t idx) {
-	buffer_.insert(idx, str);
-}
-
-void Document::remove_from_buf(const size_t from, const size_t to) {
-	if (to >= from && to <= buffer_.length()) {
-		buffer_.erase(from, to);
-	}
 }
 
 std::string Document::extract_buf_substr(const size_t from, const size_t to) {
@@ -73,8 +47,7 @@ void Document::set_copy_idxs(const std::pair<size_t, size_t>& p){
 	last_copy_idx = p;
 }
 
-std::pair<size_t, size_t> Document::get_copied_idxs() const
-{
+std::pair<size_t, size_t> Document::get_copied_idxs() const {
 	return last_copy_idx;
 }
 
@@ -103,7 +76,7 @@ void LineEditor::execute(std::shared_ptr<Command> cmd) {
 		commands.erase((commands.begin() + current_command), commands.end());
 	}
 	commands.push_back(cmd);
-	cmd->Execute();
+ 	cmd->Execute();
 	current_command++;
 }
 
@@ -126,8 +99,6 @@ void CopyCmd::Execute() {
 	size_t ln = len();
 	if (ln > 0 && start < doc->length()) {
 		std::string substring = doc->substr(start, ln);
-		/*doc->push_in_buf(std::move(substring));*/
-
 		doc->put_to_buf(substring);
 		doc->set_copy_idxs({ start, end });
 		executed = true;
@@ -161,7 +132,7 @@ PasteCmd::PasteCmd() {
 void PasteCmd::Execute() {
 	if (doc->buf_size()) {
 		std::pair<size_t, size_t> from_to = doc->get_copied_idxs();
-		pasted_str = doc->extract_buf_substr(from_to.first, from_to.second);
+		pasted_str = doc->substr(from_to.first, from_to.second);
 		if (idx >= doc->size()) {
 			original_size = doc->length();
 			doc->resize((idx), ' ');
@@ -175,8 +146,6 @@ void PasteCmd::unExecute() {
 	if (executed) {
 		std::string substr = doc->substr(idx, idx + pasted_str.length());
 		doc->erase(idx, pasted_str.length());
-		std::pair<size_t, size_t> from_to = doc->get_copied_idxs();
-		doc->insert_in_buf(substr, from_to.first);
 		if (original_size > 0)
 			doc->resize(original_size);
 		executed = false;

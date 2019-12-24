@@ -17,9 +17,6 @@ TEST(COPY, FirstTest) {
 	);
 	CmdParser parser(ss, doc);
 	editor.edit(parser.return_cmds());
-	/*for (auto cmd : parser) { 
-		editor.execute(cmd);
-	}*/
 	EXPECT_EQ(doc->text(), "aabc");
 }
 
@@ -411,6 +408,57 @@ TEST(MIXED_CMDS, insert_undo_redo) {
 	editor.edit(parser.return_cmds());
 	EXPECT_EQ(doc->text(), "Hello!\nThis is my new program!");
 }
+
+TEST(PASTE, paste_several_times) {
+	std::string str = "Hello!\n";
+	auto doc = std::make_shared<Document>(str);
+	LineEditor editor;
+	std::stringstream ss(
+		"copy 0, 2\n" 
+		"paste 0\n"
+		"paste 0\n"
+		"paste 0\n"
+	);
+	CmdParser parser(ss, doc);
+	editor.edit(parser.return_cmds());
+	EXPECT_EQ(doc->text(), "HeHeHeHello!\n");
+}
+
+TEST(MIXED_CMDS, copy_multy_paste_undo) {
+	std::string str = "Hello!\n";
+	auto doc = std::make_shared<Document>(str);
+	LineEditor editor;
+	std::stringstream ss(
+		"copy 0, 2\n"
+		"paste 0\n"
+		"paste 0\n"
+		"paste 0\n"
+		"undo\n"
+		"undo\n"
+	);
+	CmdParser parser(ss, doc);
+	editor.edit(parser.return_cmds());
+	EXPECT_EQ(doc->text(), "HeHello!\n");
+}
+
+TEST(MIXED_CMDS, multi_copy_multi_paste_undo_redo) {
+	std::string str = "Hello!\n";
+	auto doc = std::make_shared<Document>(str);
+	LineEditor editor;
+	std::stringstream ss(
+		"copy 0, 2\n"
+		"paste 0\n" // HeHello
+		"copy 0, 3\n" //HeH
+		"paste 0\n" //HeHHeHello
+		"redo\n" //HeHHeHHeHello
+		"undo\n"
+		"undo\n"
+	);
+	CmdParser parser(ss, doc);
+	editor.edit(parser.return_cmds());
+	EXPECT_EQ(doc->text(), "HeHello!\n");
+}
+
 
 int main(int argc, char *argv[])
 {
