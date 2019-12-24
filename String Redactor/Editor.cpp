@@ -33,22 +33,12 @@ size_t Document::buf_size() const {
 	return buffer_.length();
 }
 
-void Document::put_to_buf(const std::string & str) {
-	buffer_ += str;
+void Document::assign_to_buf(const std::string & str) {
+	buffer_.assign(str);
 }
 
-std::string Document::extract_buf_substr(const size_t from, const size_t to) {
-	std::string substr = buffer_.substr(from, to);
-	buffer_.erase(from, to);
-	return substr;
-}
-
-void Document::set_copy_idxs(const std::pair<size_t, size_t>& p){
-	last_copy_idx = p;
-}
-
-std::pair<size_t, size_t> Document::get_copied_idxs() const {
-	return last_copy_idx;
+inline std::string Document::get_buffer() const {
+	return buffer_;
 }
 
 
@@ -69,39 +59,45 @@ void LineEditor::execute(std::shared_ptr<Command> cmd) {
 		undo();
 		return;
 	}
-
-	size_t cmds_sz = commands.size();
-	if (cmds_sz > 0 &&
-		current_command < (cmds_sz - 1)) {
-		commands.erase((commands.begin() + current_command), commands.end());
-	}
-	commands.push_back(cmd);
- 	cmd->Execute();
-	current_command++;
+	/*Любая другая команда -- > RedoList уничтожить*/
+	destroy_redo_list();
+	cmd->Execute();
+	UndoList.push(cmd);
 }
 
 void LineEditor::undo() {
-	if (current_command > 0) {
-		commands[--current_command]->unExecute();
+	if (UndoList.size()) {
+		std::shared_ptr<Command> undo_cmd = UndoList.top();
+		UndoList.pop();
+		undo_cmd->unExecute();
+		RedoList.push(undo_cmd);
 	}
 }
 
 void LineEditor::redo() {
-	if (!commands.size()) {
-		return;
+	if (RedoList.size()) {
+		std::shared_ptr<Command> redo_cmd = RedoList.top();
+		RedoList.pop();
+		redo_cmd->Execute();
+		UndoList.push(redo_cmd);
 	}
-	if (current_command <= (commands.size() - 1)) {
-		commands[current_command++]->Execute();
+}
+
+inline void LineEditor::destroy_redo_list() {
+	while (RedoList.size()) {
+		RedoList.pop();
 	}
 }
 
 void CopyCmd::Execute() {
 	size_t ln = len();
 	if (ln > 0 && start < doc->length()) {
-		std::string substring = doc->substr(start, ln);
-		doc->put_to_buf(substring);
-		doc->set_copy_idxs({ start, end });
-		executed = true;
+		/*Запомнили, что лежало в буффере до этого*/
+		prev_piece = doc->get_buffer();
+
+		/*Запомнили, что скопировали в команду*/
+		copied_piece = doc->substr(start, ln);
+		doc->assign_to_buf(copied_piece);
 	}
 }
 
@@ -112,9 +108,8 @@ void CopyCmd::set_params(const Parameters & params) {
 }
 
 void CopyCmd::unExecute() {
-	if (len() > 0 && executed) {
-		doc->extract_buf_substr(start,end);
-		executed = false;
+	if (len() > 0 ) {
+		doc->assign_to_buf(prev_piece);
 	}
 }
 
@@ -131,25 +126,18 @@ PasteCmd::PasteCmd() {
 
 void PasteCmd::Execute() {
 	if (doc->buf_size()) {
-		std::pair<size_t, size_t> from_to = doc->get_copied_idxs();
-		pasted_str = doc->substr(from_to.first, from_to.second);
 		if (idx >= doc->size()) {
-			original_size = doc->length();
 			doc->resize((idx), ' ');
 		}
+		pasted_str = doc->get_buffer();
 		doc->insert(idx, pasted_str);
-		executed = true;
 	}
 }
 
 void PasteCmd::unExecute() {
-	if (executed) {
-		std::string substr = doc->substr(idx, idx + pasted_str.length());
-		doc->erase(idx, pasted_str.length());
-		if (original_size > 0)
-			doc->resize(original_size);
-		executed = false;
-	}
+	doc->erase(idx, pasted_str.length());
+	if (original_size > 0)
+		doc->resize(original_size);
 }
 
 void PasteCmd::set_params(const Parameters & params) {
@@ -176,7 +164,6 @@ void InsertCmd::Execute() {
 		doc->resize((idx), ' ');
 	}
 	doc->insert(idx, str);
-	executed = true;
 }
 
 void InsertCmd::unExecute() {
@@ -186,7 +173,6 @@ void InsertCmd::unExecute() {
 	doc->erase(idx, str.length());
 	if (original_size > 0)
 		doc->resize(original_size);
-	executed = false;
 }
 
 DelCmd::DelCmd(){
@@ -211,14 +197,12 @@ void DelCmd::Execute() {
 	if (ln > 0 && start < doc->length()) {
 		deleted = doc->substr(start, ln);
 		doc->erase(start, ln);
-		executed = true;
 	}
 }
 
 void DelCmd::unExecute() {
 	if (len() > 0 && deleted.length() > 0) {
 		doc->insert(start, deleted);
-		executed = false;
 	}
 }
 

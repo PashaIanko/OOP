@@ -450,9 +450,30 @@ TEST(MIXED_CMDS, multi_copy_multi_paste_undo_redo) {
 		"paste 0\n" // HeHello
 		"copy 0, 3\n" //HeH
 		"paste 0\n" //HeHHeHello
-		"redo\n" //HeHHeHHeHello
+		"undo\n"
+		"redo\n" 
+		"undo\n"
+	);
+	CmdParser parser(ss, doc);
+	editor.edit(parser.return_cmds());
+	EXPECT_EQ(doc->text(), "HeHello!\n");
+}
+
+TEST(REDO, redo_two_last_denied_comands) {
+	std::string str = "Hello!\n";
+	auto doc = std::make_shared<Document>(str);
+	LineEditor editor;
+	std::stringstream ss(
+		"copy 0, 2\n"
+		"paste 0\n" // HeHello
+		"copy 0, 3\n" //HeH
+		"paste 0\n" //HeHHeHello
 		"undo\n"
 		"undo\n"
+		"undo\n"
+		"undo\n"
+		"redo\n"
+		"redo\n"
 	);
 	CmdParser parser(ss, doc);
 	editor.edit(parser.return_cmds());

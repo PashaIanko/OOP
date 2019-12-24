@@ -18,14 +18,10 @@ public:
 
 	size_t buf_size() const;
 	
-	inline void put_to_buf(const std::string& str);
-	inline std::string extract_buf_substr(const size_t from, const size_t to);
-	inline void set_copy_idxs(const std::pair<size_t, size_t> & p);
-	inline std::pair<size_t, size_t> get_copied_idxs() const;
-
+	inline void assign_to_buf(const std::string& str);
+	inline std::string get_buffer() const;
 private:
 	std::string buffer_{};
-	std::pair<size_t, size_t> last_copy_idx{};
 };
 
 
@@ -40,7 +36,6 @@ public:
 private:
 	static std::shared_ptr<Command> create_internal(const std::string& command);
 protected:
-	bool executed = false;
 	std::shared_ptr<Document> doc{};
 };
 
@@ -74,7 +69,9 @@ public:
 
 private:
 	std::vector<std::shared_ptr<Command>> commands;
-	size_t current_command = 0;
+	std::stack<std::shared_ptr<Command>> UndoList;
+	std::stack<std::shared_ptr<Command>> RedoList;
+	inline void destroy_redo_list();
 };
 
 
@@ -97,6 +94,8 @@ public:
 
 private:
 	size_t start, end;
+	std::string copied_piece{};
+	std::string prev_piece{}; //что лежало в буффере до этого
 };
 
 
