@@ -3,8 +3,8 @@
 #include "..\HookeJeeves\HJ_Calculator.h"
 
 
-OOP_StyleStrategy::OOP_StyleStrategy(const Ctor_Params & params) {
-	calc_parameters = params;
+OOP_StyleStrategy::OOP_StyleStrategy(const Ctor_Params & params) :calc_parameters(params) {
+
 }
 
 void OOP_StyleStrategy::calc(){
@@ -16,10 +16,6 @@ void OOP_StyleStrategy::calc(){
 	calculated_min_coord = calculator.return_min_coordinates();
 }
 
-const std::vector<double>& OOP_StyleStrategy::get_calculated_min_coord() const
-{
-	if (calculated_min_coord.size()) {
-		return calculated_min_coord;
-	}
-	return std::vector<double>();
+const std::vector<double>& OOP_StyleStrategy::get_res() {
+	return calculated_min_coord;
 }

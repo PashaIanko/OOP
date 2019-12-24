@@ -12,12 +12,12 @@ struct Copyable {
 
 struct Ctor_Params 
 {
-	int dimensions; //размерность области определения функции
+	//int dimensions; //размерность области определения функции
 	double rho;
 	double epsilon;
 	int iterations_limit;
-	size_t data_size;
+	//size_t data_size;
 	double(*func_ptr)(double*, int);
-	std::vector<double> raw_data;
+	const std::vector<double>& raw_data;
 	//std::vector<double> cooked_data;
 };

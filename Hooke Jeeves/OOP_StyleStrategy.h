@@ -8,9 +8,10 @@ public:
 	OOP_StyleStrategy() = delete;
 	OOP_StyleStrategy(const Ctor_Params& params);
 	virtual void calc() override;
-	const std::vector<double>& get_calculated_min_coord() const;
+	virtual const std::vector<double>& get_res() override;
+
 private:
-	Ctor_Params calc_parameters;
+	const Ctor_Params& calc_parameters;
 	int numb_of_iterations{};
 	std::vector<double> calculated_min_coord{};
 };

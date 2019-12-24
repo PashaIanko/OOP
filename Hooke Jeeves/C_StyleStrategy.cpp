@@ -3,8 +3,8 @@
 #include "..\HookeJeeves\HookeJeeves.h"
 //#include "HookeJeves.h"
 
-C_StyleStrategy::C_StyleStrategy(const Ctor_Params & params) {
-	calc_parameters = params;
+C_StyleStrategy::C_StyleStrategy(const Ctor_Params & params):calc_parameters(params){
+	
 }
 
 void C_StyleStrategy::calc() { /*support the C-style 
@@ -12,8 +12,8 @@ void C_StyleStrategy::calc() { /*support the C-style
 	result.resize(calc_parameters.raw_data.size());
 	int jj = hooke
 	(
-		calc_parameters.dimensions,
-		calc_parameters.raw_data.data(),
+		(int)calc_parameters.raw_data.size(),//calc_parameters.dimensions,
+		const_cast<double*>(calc_parameters.raw_data.data()),
 		result.data(),
 		calc_parameters.rho,
 		calc_parameters.epsilon,
@@ -31,4 +31,3 @@ void C_StyleStrategy::set_calc_res(const std::vector<double>& v){
 const std::vector<double>& C_StyleStrategy::get_res() {
 	return result;
 }
-

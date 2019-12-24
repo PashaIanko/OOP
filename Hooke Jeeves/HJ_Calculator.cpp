@@ -5,7 +5,6 @@
 
 
 HJ_Calculator::HJ_Calculator(const Ctor_Params & calc_params) : 
-	domain_dimensions(calc_params.dimensions),
 	convergence_param(calc_params.rho),
 	accuracy(calc_params.epsilon),
 	iterations_lim(calc_params.iterations_limit),
@@ -14,14 +13,11 @@ HJ_Calculator::HJ_Calculator(const Ctor_Params & calc_params) :
 	if (calc_params.raw_data.size()) {
 		raw_data = calc_params.raw_data;
 	}
+	domain_dimensions = raw_data.size();
 }
 
-std::vector<double> HJ_Calculator::return_min_coordinates() const
-{
-	if (coordinates_next.size())
+std::vector<double> HJ_Calculator::return_min_coordinates() const {
 		return coordinates_next;
-	else
-		return std::vector<double>();
 }
 
 size_t HJ_Calculator::HJ_calc(){
@@ -87,7 +83,6 @@ size_t HJ_Calculator::HJ_calc(){
 	}
 	coordinates_next = coordinates_prev;
 	return iterations_made;
-
 }
 
 double HJ_Calculator::best_nearby(const double func_val) {
@@ -155,16 +150,12 @@ void HJ_Calculator::refresh_coordinates() {
 }
 
 bool HJ_Calculator::check_for_foundoff_errs() const {
-	bool result = false;
 	for (size_t i = 0; i < domain_dimensions; i++) {
-		result = true;
 		if (fabs(coordinates_next[i] - coordinates_prev[i]) >
 			(0.5 * fabs(deltas[i])))
-			break;
-		else
-			result = false;
+			return true;
 	}
-	return result;
+	return false;
 }
 
 
