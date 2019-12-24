@@ -15,6 +15,5 @@ public:
 
 private:
 	std::vector<std::shared_ptr<Command>> commands{};
-	std::shared_ptr<Command> parse_cmd(const std::string& cmd);
 	std::shared_ptr<Document> doc{};
 };

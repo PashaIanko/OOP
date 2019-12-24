@@ -8,18 +8,19 @@
 #include <string>
 #include "Parameters.h"
 
-namespace {
-	std::stack<std::string> string_buffer;
-}
-
 class Document : public std::string {
 public:
 	Document();
 	Document(const std::string& txt);
 	Document(std::istream& in); 
 	~Document() = default;
-
 	std::string text();
+
+	void push_in_buf(std::string&& str);
+	void push_in_buf(const std::string& str);
+	void pop_from_buf();
+	std::string extract_buf_top();
+	size_t buf_size() const;
 
 private:
 	std::stack<std::string> buffer{}; /*история изменений*/
@@ -33,7 +34,9 @@ public:
 	virtual void Execute() = 0;
 	virtual void unExecute() = 0;
 	virtual ~Command() {}
-	static std::shared_ptr<Command> create(const std::string command);
+	static std::shared_ptr<Command> create(const std::string& command, std::shared_ptr<Document>& doc);
+private:
+	static std::shared_ptr<Command> create_internal(const std::string& command);
 protected:
 	bool executed = false;
 	std::shared_ptr<Document> doc{};
