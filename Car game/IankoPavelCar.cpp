@@ -1,4 +1,6 @@
 #include "IankoPavelCar.h"
+#include <vector>
+#include <algorithm>
 
 void IankoCar::set_body_type(b2BodyType type_) {
 	body_descriptor.type = type_;
@@ -19,10 +21,27 @@ void IankoCar::set_wheel_position(float32 x, float32 y) {
 void IankoCar::init_wheel_structure() {
 
 	wheels_info.circle.m_radius = 0.4f;
-
 	wheels_info.phys_properties.shape = &wheels_info.circle;
 	wheels_info.phys_properties.density = 1.0f;
 	wheels_info.phys_properties.friction = 0.9f;
+}
+
+void IankoCar::change_leader_wheel(b2WheelJoint * from, b2WheelJoint * to) {
+	if (leader_spring != to) {
+		float32 chunk = m_speed / 600;
+		float32 decrem_speed = m_speed;
+		float32 increm_speed = 0.0f;
+		for (size_t i = 0; i < 100; ++i) {
+			decrem_speed -= chunk;
+			increm_speed += chunk;
+			from->SetMotorSpeed(decrem_speed);
+			to->SetMotorSpeed(increm_speed);
+		}
+		/*final assignment*/
+		from->SetMotorSpeed(0.0f);
+		to->SetMotorSpeed(m_speed);
+		leader_spring = to;
+	}
 }
 
 b2PolygonShape IankoCar::create_chassis()
@@ -63,31 +82,30 @@ void IankoCar::joint_wheel(b2Body* wheel, const b2Vec2 & axis, const JointParams
 
 void IankoCar::create_polygon(const float32 x_start) {
 
-	grnd_shape.Set({ -20.0f + x_start, 0.0f }, { 20.0f + x_start, 0.0f });
+	grnd_shape.Set({ -1.0f + x_start, 0.0f }, { 20.0f + x_start, 0.0f });
 	ground->CreateFixture(&grnd_properties); /*задать свойства*/
-	ground_end = 20.0f + x_start;
 
-				/*b2EdgeShape shape;
-			init_wheel_structure();
-			b2FixtureDef fd;
-			fd.shape = &shape;
-			fd.density = 0.0f;
-			fd.friction = 0.6f;
+	// Generate 10 random heights
+	size_t rand_heights_size = 10;
+	std::vector<float32> rand_heights(rand_heights_size);
+	int32 max_height = 2;
+	std::generate(rand_heights.begin(), rand_heights.end(), 
+		[max_height]() {
+		return rand() % max_height;
+	});
 
-			shape.Set(b2Vec2(-20.0f, 0.0f), b2Vec2(20.0f, 0.0f));
-			ground->CreateFixture(&fd);
+	float32 x = 20.0f + x_start;
+	float32 y1 = 0.0f; 
+	float32 dx = 5.0f;
 
-			float32 hs[10] = { 0.25f, 1.0f, 4.0f, 0.0f, 0.0f, -1.0f, -2.0f, -2.0f, -1.25f, 0.0f };
+	for (int32 i = 0; i < rand_heights_size; ++i) {
 
-			float32 x = 20.0f, y1 = 0.0f, dx = 5.0f;
+		float32 cur_height = rand_heights[i];
 
-			for (int32 i = 0; i < 10; ++i)
-			{
-				float32 y2 = hs[i];
-				shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
-				ground->CreateFixture(&fd);
-				y1 = y2;
-				x += dx;
-			}*/
-
+		grnd_shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, cur_height));
+		ground->CreateFixture(&grnd_properties);
+		y1 = cur_height;
+		x += dx;
+	}
+	ground_end = x;
 }

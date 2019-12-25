@@ -25,7 +25,6 @@ class IankoCar : public Test
 public:
 	IankoCar()
 	{
-		//b2Body* ground = NULL;
 		{
 			b2BodyDef bd;
 			ground = m_world->CreateBody(&bd);
@@ -180,32 +179,48 @@ public:
 			init_wheel_structure();
 			b2PolygonShape chassis = create_chassis();
 
-
 			set_body_type(b2_dynamicBody);
 			set_wheel_type(b2_dynamicBody);
 			
-			Wheel* wh = builder.get_wheel(-1.0f, 0.35f);
-
 			set_body_position(0.0f, 1.0f);
 			m_car = m_world->CreateBody(&body_descriptor);
 			m_car->CreateFixture(&chassis, 1.0f);
 
 
-			set_wheel_position(-1.0f, 0.35f);
+			/*set_wheel_position(-1.0f, 0.35f);
 			m_wheel1 = m_world->CreateBody(&wheel_descriptor);
 			m_wheel1->CreateFixture(&wheels_info.phys_properties);
 
 			set_wheel_position(1.0f, 0.4f);
 			m_wheel2 = m_world->CreateBody(&wheel_descriptor);
-			m_wheel2->CreateFixture(&wheels_info.phys_properties);
+			m_wheel2->CreateFixture(&wheels_info.phys_properties);*/
+
+			b2CircleShape circle;
+			circle.m_radius = 0.4f;
+			b2FixtureDef fd;
+			fd.shape = &circle;
+			fd.density = 1.0f;
+			fd.friction = 0.9f;
+
+			b2BodyDef bd;
+			bd.type = b2_dynamicBody;
+
+			bd.position.Set(-1.0f, 0.35f);
+			m_wheel1 = m_world->CreateBody(&bd);
+			m_wheel1->CreateFixture(&fd);
+
+			bd.position.Set(1.0f, 0.4f);
+			m_wheel2 = m_world->CreateBody(&bd);
+			m_wheel2->CreateFixture(&fd);
+
 
 			b2Vec2 axis(0.0f, 1.0f);
-
 			joint_wheel(m_wheel1, axis, left_wheel_characteristics);
 			m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&wheel_joint_descriptor);
-
 			joint_wheel(m_wheel2, axis, right_wheel_characteristics);
 			m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&wheel_joint_descriptor);
+
+			leader_spring = m_spring1;
 		}
 	}
 
@@ -214,27 +229,27 @@ public:
 		switch (key)
 		{
 		case GLFW_KEY_A:
-			m_spring1->SetMotorSpeed(m_speed);
+			leader_spring->SetMotorSpeed(m_speed);
 			break;
 
 		case GLFW_KEY_S:
-			m_spring1->SetMotorSpeed(0.0f);
+			leader_spring->SetMotorSpeed(0.0f);
 			break;
 
 		case GLFW_KEY_D:
-			m_spring1->SetMotorSpeed(-m_speed);
+			leader_spring->SetMotorSpeed(-m_speed);
 			break;
 
-		case GLFW_KEY_Q:
-			m_hz = b2Max(0.0f, m_hz - 1.0f);
-			m_spring1->SetSpringFrequencyHz(m_hz);
-			m_spring2->SetSpringFrequencyHz(m_hz);
+		case GLFW_KEY_F: /*c заднего привода на передний*/
+			m_spring1->EnableMotor(false);
+			m_spring2->EnableMotor(true);
+			change_leader_wheel(m_spring1, m_spring2);
 			break;
 
-		case GLFW_KEY_E:
-			m_hz += 1.0f;
-			m_spring1->SetSpringFrequencyHz(m_hz);
-			m_spring2->SetSpringFrequencyHz(m_hz);
+		case GLFW_KEY_B: /*c переднего привода на задний*/
+			m_spring1->EnableMotor(true);
+			m_spring2->EnableMotor(false);
+			change_leader_wheel(m_spring2, m_spring1);
 			break;
 		}
 	}
@@ -249,8 +264,8 @@ public:
 		float32 car_x = m_car->GetPosition().x;
 		float32 car_y = m_car->GetPosition().y;
 
-		g_camera.m_center.x = car_x;//m_car->GetPosition().x;
-		g_camera.m_center.y = car_y;//m_car->GetPosition().y;
+		g_camera.m_center.x = car_x;
+		g_camera.m_center.y = car_y;
 
 		/*create further landscape if close to the end*/
 		float32 distance_to_see = 10.0f;
@@ -279,10 +294,11 @@ public:
 
 	float32 m_hz = 4.0f;
 	float32 m_zeta = 0.7f;
-	float32 m_speed = 50.0f;
+	float32 m_speed = 30.0f;
 
 	b2WheelJoint* m_spring1;
 	b2WheelJoint* m_spring2;
+	b2WheelJoint* leader_spring;
 
 	private:
 		b2Vec2 impulse{ jump_intensity_x, jump_intensity_y };
@@ -294,7 +310,6 @@ public:
 		b2WheelJointDef wheel_joint_descriptor{};
 
 		WheelStructure wheels_info{};
-		//b2FixtureDef wheel_structure{};
 
 		void set_body_type(b2BodyType type_);
 		void set_wheel_type(b2BodyType type_);
@@ -302,6 +317,7 @@ public:
 		void set_body_position(float32 x, float32 y);
 		void set_wheel_position(float32 x, float32 y);
 		void init_wheel_structure();
+		void change_leader_wheel(b2WheelJoint* from, b2WheelJoint* to);
 
 		b2PolygonShape create_chassis();
 		void create_car_body();
@@ -321,8 +337,8 @@ public:
 		const JointParams right_wheel_characteristics
 		{
 			0.0f,
-			10.0f,
-			false,
+			20.0f,
+			false, //для переключения мощности, enable_motor к обеим колёсам
 			m_hz,
 			m_zeta
 		};
