@@ -187,14 +187,6 @@ public:
 			m_car->CreateFixture(&chassis, 1.0f);
 
 
-			/*set_wheel_position(-1.0f, 0.35f);
-			m_wheel1 = m_world->CreateBody(&wheel_descriptor);
-			m_wheel1->CreateFixture(&wheels_info.phys_properties);
-
-			set_wheel_position(1.0f, 0.4f);
-			m_wheel2 = m_world->CreateBody(&wheel_descriptor);
-			m_wheel2->CreateFixture(&wheels_info.phys_properties);*/
-
 			b2CircleShape circle;
 			circle.m_radius = 0.4f;
 			b2FixtureDef fd;
@@ -251,9 +243,34 @@ public:
 			m_spring2->EnableMotor(false);
 			change_leader_wheel(m_spring2, m_spring1);
 			break;
+
+    
+		case GLFW_KEY_J: 
+			m_wheel1->ApplyForce(b2Vec2(0, 400), m_wheel1->GetLocalCenter(), true);
+			m_wheel2->ApplyForce(b2Vec2(0, 400), m_wheel2->GetLocalCenter(), true);
+			break;
+
+		/*case GLFW_KEY_L: //Accelerate
+			if_accelerate = true;
+			static float32 speed = m_speed;
+			float32 step = 0.5f;
+			speed += step;
+			leader_spring->SetMotorSpeed(speed);
+			break;*/
 		}
+
+
 	}
 
+	/*void KeyboardUp(int key) {
+		switch (key) {
+		case GLFW_KEY_L: //Disable Acceleration
+			if_accelerate = false;
+			break;
+		}
+	}*/
+	
+	
 	void Step(Settings* settings)
 	{
 		g_debugDraw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d, hz down = q, hz up = e");
@@ -272,7 +289,12 @@ public:
 		if (fabs(ground_end - car_x) < distance_to_see) {
 			create_polygon(car_x);
 		}
-
+		
+		if (if_accelerate) {
+			Keyboard(GLFW_KEY_L);
+		}
+		
+		
 		Test::Step(settings);
 	}
 
@@ -324,7 +346,8 @@ public:
 		void joint_wheel(b2Body* wheel, const b2Vec2 & axis, const JointParams& params);
 		void create_polygon(const float32 x_start);
 
-		CarBuilder builder;
+		bool if_accelerate = false;
+		//CarBuilder builder;
 
 		const JointParams left_wheel_characteristics
 		{
