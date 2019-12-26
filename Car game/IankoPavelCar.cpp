@@ -160,14 +160,16 @@ void IankoCar::create_polygon(const float32 x_start) {
 	}
 
 	x += 10.0f;
-	ground_end = x;
+	//ground_end = x;
 
 	/*далее - маятник*/
-	//grnd_shape.Set({ x, 0.0f }, { 10.0f + x, 0.0f });
+	float32 next_offset = 30.0f;
+	grnd_shape.Set({ x, 0.0f }, { next_offset + x, 0.0f });
+	ground->CreateFixture(&grnd_properties); /*задать свойства*/
 
-	/* //Teeter
+	 //Teeter
 	{
-		auto teeter_pos = std::rand() % (int)(10.0f);
+		auto teeter_pos = std::rand() % (int)(next_offset);
 
 		b2BodyDef bd;
 		bd.position.Set(x + teeter_pos, 1.0f);
@@ -175,7 +177,7 @@ void IankoCar::create_polygon(const float32 x_start) {
 		b2Body* body = m_world->CreateBody(&bd);
 
 		b2PolygonShape box;
-		box.SetAsBox(10.0f, 0.25f);
+		box.SetAsBox(7.0f, 0.25f);
 		body->CreateFixture(&box, 1.0f);
 
 		b2RevoluteJointDef jd;
@@ -188,7 +190,7 @@ void IankoCar::create_polygon(const float32 x_start) {
 		body->ApplyAngularImpulse(100.0f, true);
 	}
 
-	x += 10.0f;
-	ground_end = x;*/
+	x += next_offset;
+	ground_end = x;
 
 }

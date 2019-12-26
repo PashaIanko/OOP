@@ -36,63 +36,6 @@ public:
 			create_polygon(-5.0f);
 		}
 
-	//	// Teeter
-	//	{
-	//		b2BodyDef bd;
-	//		bd.position.Set(140.0f, 1.0f);
-	//		bd.type = b2_dynamicBody;
-	//		b2Body* body = m_world->CreateBody(&bd);
-
-	//		b2PolygonShape box;
-	//		box.SetAsBox(10.0f, 0.25f);
-	//		body->CreateFixture(&box, 1.0f);
-
-	//		b2RevoluteJointDef jd;
-	//		jd.Initialize(ground, body, body->GetPosition());
-	//		jd.lowerAngle = -8.0f * b2_pi / 180.0f;
-	//		jd.upperAngle = 8.0f * b2_pi / 180.0f;
-	//		jd.enableLimit = true;
-	//		m_world->CreateJoint(&jd);
-
-	//		body->ApplyAngularImpulse(100.0f, true);
-	//	}
-
-	//	// Bridge
-	//	{
-	//		int32 N = 20;
-	//		b2PolygonShape shape;
-	//		shape.SetAsBox(1.0f, 0.125f);
-
-	//		b2FixtureDef fd;
-	//		fd.shape = &shape;
-	//		fd.density = 1.0f;
-	//		fd.friction = 0.6f;
-
-	//		b2RevoluteJointDef jd;
-
-	//		b2Body* prevBody = ground;
-	//		for (int32 i = 0; i < N; ++i)
-	//		{
-	//			b2BodyDef bd;
-	//			bd.type = b2_dynamicBody;
-	//			bd.position.Set(161.0f + 2.0f * i, -0.125f);
-	//			b2Body* body = m_world->CreateBody(&bd);
-	//			body->CreateFixture(&fd);
-
-	//			b2Vec2 anchor(160.0f + 2.0f * i, -0.125f);
-	//			jd.Initialize(prevBody, body, anchor);
-	//			m_world->CreateJoint(&jd);
-
-	//			prevBody = body;
-	//		}
-
-	//		b2Vec2 anchor(160.0f + 2.0f * N, -0.125f);
-	//		jd.Initialize(prevBody, ground, anchor);
-	//		m_world->CreateJoint(&jd);
-	//	}
-
-
-
 		// Car
 		{
 			init_wheel_structure();
@@ -101,7 +44,6 @@ public:
 			set_body_type(b2_dynamicBody);
 			set_wheel_type(b2_dynamicBody);
 			
-			//float32 offset = 5.0f; //создаём машинку чуть правее
 			set_body_position(0.0f, 1.0f);
 			m_car = m_world->CreateBody(&body_descriptor);
 			m_car->CreateFixture(&chassis, 1.0f);
@@ -201,7 +143,7 @@ public:
 		g_camera.m_center.y = car_y;
 
 		/*create further landscape if close to the end*/
-		float32 distance_to_see = 10.0f;
+		float32 distance_to_see = 50.0f;
 		
 		if (fabs(ground_end - car_x) < distance_to_see) {
 			create_polygon(ground_end);
