@@ -1,6 +1,7 @@
 #include "IankoPavelCar.h"
 #include <vector>
 #include <algorithm>
+#include <cstdlib>
 
 void IankoCar::set_body_type(b2BodyType type_) {
 	body_descriptor.type = type_;
@@ -82,7 +83,7 @@ void IankoCar::joint_wheel(b2Body* wheel, const b2Vec2 & axis, const JointParams
 
 void IankoCar::create_polygon(const float32 x_start) {
 
-	grnd_shape.Set({ -1.0f + x_start, 0.0f }, { 20.0f + x_start, 0.0f });
+	grnd_shape.Set({ x_start, 0.0f }, { 20.0f + x_start, 0.0f });
 	ground->CreateFixture(&grnd_properties); /*задать свойства*/
 
 	// Generate 10 random heights
@@ -107,5 +108,87 @@ void IankoCar::create_polygon(const float32 x_start) {
 		y1 = cur_height;
 		x += dx;
 	}
+
+	grnd_shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, 0.0f)); //вернуться к нулевой высоте
+	ground->CreateFixture(&grnd_properties);
+	x += dx;
+
+	grnd_shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 5.0f, 0.0f));
+	ground->CreateFixture(&grnd_properties);
+	x += 5.0f;
+
+	//ground_end = x;
+
+	//след. этап от x до x+20 - коробки
+	grnd_shape.Set({ x, 0.0f }, { 10.0f + x, 0.0f });
+	ground->CreateFixture(&grnd_properties); /*задать свойства*/
+
+	// Boxes
+	{
+		/*Random position*/
+		
+		auto boxes_pos = std::rand() % (int)(10.0f);
+
+
+		b2PolygonShape box;
+		box.SetAsBox(0.25f, 0.25f);
+
+		b2Body* body = NULL;
+		b2BodyDef bd;
+		bd.type = b2_dynamicBody;
+
+		bd.position.Set(x + boxes_pos, 0.25f);
+		body = m_world->CreateBody(&bd);
+		body->CreateFixture(&box, 0.5f);
+
+		bd.position.Set(x + boxes_pos, 0.75f);
+		body = m_world->CreateBody(&bd);
+		body->CreateFixture(&box, 0.5f);
+
+		bd.position.Set(x + boxes_pos, 1.25f);
+		body = m_world->CreateBody(&bd);
+		body->CreateFixture(&box, 0.5f);
+
+		bd.position.Set(x + boxes_pos, 1.75f);
+		body = m_world->CreateBody(&bd);
+		body->CreateFixture(&box, 0.5f);
+
+		bd.position.Set(x + boxes_pos, 2.25f);
+		body = m_world->CreateBody(&bd);
+		body->CreateFixture(&box, 0.5f);
+		
+	}
+
+	x += 10.0f;
 	ground_end = x;
+
+	/*далее - маятник*/
+	//grnd_shape.Set({ x, 0.0f }, { 10.0f + x, 0.0f });
+
+	/* //Teeter
+	{
+		auto teeter_pos = std::rand() % (int)(10.0f);
+
+		b2BodyDef bd;
+		bd.position.Set(x + teeter_pos, 1.0f);
+		bd.type = b2_dynamicBody;
+		b2Body* body = m_world->CreateBody(&bd);
+
+		b2PolygonShape box;
+		box.SetAsBox(10.0f, 0.25f);
+		body->CreateFixture(&box, 1.0f);
+
+		b2RevoluteJointDef jd;
+		jd.Initialize(ground, body, body->GetPosition());
+		jd.lowerAngle = -8.0f * b2_pi / 180.0f;
+		jd.upperAngle = 8.0f * b2_pi / 180.0f;
+		jd.enableLimit = true;
+		m_world->CreateJoint(&jd);
+
+		body->ApplyAngularImpulse(100.0f, true);
+	}
+
+	x += 10.0f;
+	ground_end = x;*/
+
 }

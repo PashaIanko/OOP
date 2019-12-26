@@ -29,64 +29,11 @@ public:
 			b2BodyDef bd;
 			ground = m_world->CreateBody(&bd);
 
-
 			grnd_properties.shape = &grnd_shape;
 			grnd_properties.density = 0.0f;
 			grnd_properties.friction = 0.6f;
 			
-			
-			create_polygon(0.0f);
-
-			/*b2EdgeShape shape;
-			init_wheel_structure();
-			b2FixtureDef fd;
-			fd.shape = &shape;
-			fd.density = 0.0f;
-			fd.friction = 0.6f;
-
-			shape.Set(b2Vec2(-20.0f, 0.0f), b2Vec2(20.0f, 0.0f));
-			ground->CreateFixture(&fd);
-
-			float32 hs[10] = { 0.25f, 1.0f, 4.0f, 0.0f, 0.0f, -1.0f, -2.0f, -2.0f, -1.25f, 0.0f };
-
-			float32 x = 20.0f, y1 = 0.0f, dx = 5.0f;
-
-			for (int32 i = 0; i < 10; ++i)
-			{
-				float32 y2 = hs[i];
-				shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
-				ground->CreateFixture(&fd);
-				y1 = y2;
-				x += dx;
-			}
-
-			for (int32 i = 0; i < 10; ++i)
-			{
-				float32 y2 = hs[i];
-				shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
-				ground->CreateFixture(&fd);
-				y1 = y2;
-				x += dx;
-			}
-
-			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
-			ground->CreateFixture(&fd);
-
-			x += 80.0f;
-			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
-			ground->CreateFixture(&fd);
-
-			x += 40.0f;
-			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 10.0f, 5.0f));
-			ground->CreateFixture(&fd);
-
-			x += 20.0f;
-			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
-			ground->CreateFixture(&fd);
-
-			x += 40.0f;
-			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x, 20.0f));
-			ground->CreateFixture(&fd);*/
+			create_polygon(-5.0f);
 		}
 
 	//	// Teeter
@@ -144,35 +91,7 @@ public:
 	//		m_world->CreateJoint(&jd);
 	//	}
 
-	//	// Boxes
-	//	{
-	//		b2PolygonShape box;
-	//		box.SetAsBox(0.5f, 0.5f);
 
-	//		b2Body* body = NULL;
-	//		b2BodyDef bd;
-	//		bd.type = b2_dynamicBody;
-
-	//		bd.position.Set(230.0f, 0.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 1.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 2.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 3.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-
-	//		bd.position.Set(230.0f, 4.5f);
-	//		body = m_world->CreateBody(&bd);
-	//		body->CreateFixture(&box, 0.5f);
-	//	}
 
 		// Car
 		{
@@ -182,6 +101,7 @@ public:
 			set_body_type(b2_dynamicBody);
 			set_wheel_type(b2_dynamicBody);
 			
+			//float32 offset = 5.0f; //создаём машинку чуть правее
 			set_body_position(0.0f, 1.0f);
 			m_car = m_world->CreateBody(&body_descriptor);
 			m_car->CreateFixture(&chassis, 1.0f);
@@ -250,25 +170,21 @@ public:
 			m_wheel2->ApplyForce(b2Vec2(0, 400), m_wheel2->GetLocalCenter(), true);
 			break;
 
-		/*case GLFW_KEY_L: //Accelerate
+		case GLFW_KEY_L: //Accelerate
 			if_accelerate = true;
-			static float32 speed = m_speed;
-			float32 step = 0.5f;
-			speed += step;
-			leader_spring->SetMotorSpeed(speed);
-			break;*/
+			break;
 		}
 
 
 	}
 
-	/*void KeyboardUp(int key) {
+	void KeyboardUp(int key) {
 		switch (key) {
 		case GLFW_KEY_L: //Disable Acceleration
 			if_accelerate = false;
 			break;
 		}
-	}*/
+	}
 	
 	
 	void Step(Settings* settings)
@@ -286,12 +202,15 @@ public:
 
 		/*create further landscape if close to the end*/
 		float32 distance_to_see = 10.0f;
+		
 		if (fabs(ground_end - car_x) < distance_to_see) {
-			create_polygon(car_x);
+			create_polygon(ground_end);
 		}
 		
 		if (if_accelerate) {
-			Keyboard(GLFW_KEY_L);
+			static float32 vel = 0;
+			vel += 0.05f;
+			leader_spring->SetMotorSpeed(-m_speed - vel);
 		}
 		
 		
@@ -347,7 +266,6 @@ public:
 		void create_polygon(const float32 x_start);
 
 		bool if_accelerate = false;
-		//CarBuilder builder;
 
 		const JointParams left_wheel_characteristics
 		{
