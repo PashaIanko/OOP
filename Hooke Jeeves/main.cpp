@@ -40,8 +40,8 @@ TEST(GeneralFunctions, RosenbrocksFunc) {
 	oop_wrapper.calc();
 	c_wrapper.calc();
 
-	EXPECT_TRUE(oop_wrapper.get_res() == c_wrapper.get_res());
-	EXPECT_TRUE(oop_wrapper.get_iters() == c_wrapper.get_iters());
+	EXPECT_TRUE(oop_wrapper.get_result() == c_wrapper.get_result());
+	EXPECT_TRUE(oop_wrapper.get_iterations_numb() == c_wrapper.get_iterations_numb());
 }
 
 TEST(GeneralFunctions, parabolic_func) {
@@ -68,8 +68,8 @@ TEST(GeneralFunctions, parabolic_func) {
 	oop_wrapper.calc();
 	c_wrapper.calc();
 
-	EXPECT_TRUE(oop_wrapper.get_res() == c_wrapper.get_res());
-	EXPECT_TRUE(oop_wrapper.get_iters() == c_wrapper.get_iters());
+	EXPECT_TRUE(oop_wrapper.get_result() == c_wrapper.get_result());
+	EXPECT_TRUE(oop_wrapper.get_iterations_numb() == c_wrapper.get_iterations_numb());
 }
 
 TEST(GeneralFunctions, shifted_up_parabolic_func) {
@@ -96,8 +96,8 @@ TEST(GeneralFunctions, shifted_up_parabolic_func) {
 	oop_wrapper.calc();
 	c_wrapper.calc();
 
-	EXPECT_TRUE(oop_wrapper.get_res() == c_wrapper.get_res());
-	EXPECT_TRUE(oop_wrapper.get_iters() == c_wrapper.get_iters());
+	EXPECT_TRUE(oop_wrapper.get_result() == c_wrapper.get_result());
+	EXPECT_TRUE(oop_wrapper.get_iterations_numb() == c_wrapper.get_iterations_numb());
 }
 
 TEST(GeneralFunctions, shifted_left_parabolic_func) {
@@ -125,8 +125,8 @@ TEST(GeneralFunctions, shifted_left_parabolic_func) {
 	oop_wrapper.calc();
 	c_wrapper.calc();
 
-	EXPECT_TRUE(oop_wrapper.get_res() == c_wrapper.get_res());
-	EXPECT_TRUE(oop_wrapper.get_iters() == c_wrapper.get_iters());
+	EXPECT_TRUE(oop_wrapper.get_result() == c_wrapper.get_result());
+	EXPECT_TRUE(oop_wrapper.get_iterations_numb() == c_wrapper.get_iterations_numb());
 }
 
 TEST(GeneralFunctions, Rotated_shifted_paraboloid) {
@@ -156,8 +156,8 @@ TEST(GeneralFunctions, Rotated_shifted_paraboloid) {
 	oop_wrapper.calc();
 	c_wrapper.calc();
 
-	EXPECT_TRUE(oop_wrapper.get_res() == c_wrapper.get_res());
-	EXPECT_TRUE(oop_wrapper.get_iters() == c_wrapper.get_iters());
+	EXPECT_TRUE(oop_wrapper.get_result() == c_wrapper.get_result());
+	EXPECT_TRUE(oop_wrapper.get_iterations_numb() == c_wrapper.get_iterations_numb());
 }
 
 

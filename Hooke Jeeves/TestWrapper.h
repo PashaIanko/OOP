@@ -12,8 +12,8 @@ public:
 	TestWrapper() = delete;
 	TestWrapper(const Ctor_Params& params);
 	void calc();
-	inline size_t get_iters() const;
-	inline const std::vector<double>& get_res() const;
+	inline size_t get_iterations_numb() const;
+	inline const std::vector<double>& get_result() const;
 private:
 	const Ctor_Params& calc_parameters;
 	std::shared_ptr<CalcStrategy> calc_strategy {};
@@ -31,11 +31,11 @@ inline void TestWrapper<T>::calc() {
 }
 
 template<typename T>
-inline size_t TestWrapper<T>::get_iters() const {
-	return calc_strategy->number_of_iterations();
+inline size_t TestWrapper<T>::get_iterations_numb() const {
+	return calc_strategy->get_iterations_numb();
 }
 
 template<typename T>
-inline const std::vector<double>& TestWrapper<T>::get_res() const {
-	return calc_strategy->get_res();
+inline const std::vector<double>& TestWrapper<T>::get_result() const {
+	return calc_strategy->get_result();
 }

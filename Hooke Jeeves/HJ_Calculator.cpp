@@ -16,7 +16,7 @@ HJ_Calculator::HJ_Calculator(const Ctor_Params & calc_params) :
 	domain_dimensions = raw_data.size();
 }
 
-std::vector<double> HJ_Calculator::return_min_coordinates() const {
+const std::vector<double>& HJ_Calculator::get_result() const {
 		return coordinates_next;
 }
 
@@ -92,32 +92,19 @@ double HJ_Calculator::best_nearby(const double func_val) {
 
 	/*modify - add little step from the point - z[i] = point[i] + delta[i]*/
 	for (size_t i = 0; i < domain_dimensions; ++i) {
-		
-
 		/*Вставленный обратно кусок из increment and compare()*/
-		bool reached_less_val = false;
 		coordinates[i] = coordinates_next[i] + deltas[i];
 		double cur_func_val = func(&coordinates[0], domain_dimensions);
 		if (cur_func_val < min_func_val) {
-			reached_less_val = true;
+			min_func_val = cur_func_val;
 		}
-
-		if (reached_less_val) {
-			min_func_val = func(&coordinates[0], domain_dimensions);
-		}
-
 		else {
-			/*ещё раз вставленный кусок increment_and_compare*/
 			deltas[i] = 0.0 - deltas[i];
-			reached_less_val = false;
 			coordinates[i] = coordinates_next[i] + deltas[i];
-			double cur_func_val = func(&coordinates[0], domain_dimensions);
+			cur_func_val = func(&coordinates[0], domain_dimensions);
+
 			if (cur_func_val < min_func_val) {
-				reached_less_val = true;
-			}
-			
-			if (reached_less_val) {
-				min_func_val = func(&coordinates[0], domain_dimensions);
+				min_func_val = cur_func_val;
 			}
 			else {
 				coordinates[i] = coordinates_next[i];

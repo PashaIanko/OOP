@@ -13,9 +13,9 @@ void OOP_StyleStrategy::calc(){
 	set_iterations_numb(iterations_made);
 	
 	/*необходимо запомнить результаты расчёта, чтобы передать их в TestWrapper*/
-	calculated_min_coord = calculator.return_min_coordinates();
+	calculated_min_coord = calculator.get_result();
 }
 
-const std::vector<double>& OOP_StyleStrategy::get_res() {
+const std::vector<double>& OOP_StyleStrategy::get_result() {
 	return calculated_min_coord;
 }

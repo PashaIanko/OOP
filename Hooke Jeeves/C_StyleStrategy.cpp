@@ -23,6 +23,6 @@ void C_StyleStrategy::calc() { /*support the C-style
 	set_iterations_numb(jj);
 }
 
-const std::vector<double>& C_StyleStrategy::get_res() {
+const std::vector<double>& C_StyleStrategy::get_result() {
 	return result;
 }

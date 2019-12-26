@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CalcStrategy.h"
 
-size_t CalcStrategy::number_of_iterations() const
+size_t CalcStrategy::get_iterations_numb() const
 {
 	return iterations_numb;
 }

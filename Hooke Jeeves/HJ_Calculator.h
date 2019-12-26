@@ -7,7 +7,7 @@ class HJ_Calculator {
 public:
 	HJ_Calculator() = delete;
 	HJ_Calculator(const Ctor_Params& calc_parameters);
-	std::vector<double> return_min_coordinates() const;
+	const std::vector<double>& get_result() const;
 	size_t HJ_calc();
 
 private:
