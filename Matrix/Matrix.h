@@ -2,24 +2,9 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-//#include "MultithreadCalculator.h"
+#include "MultithreadCalculator.h"
 
-/*template <typename T>
-class MultithreadCalculator {
-public:
-	MultithreadCalculator(const Matrix<T>& left, const Matrix<T>& right, size_t threads_numb);
 
-private:
-	const Matrix<T>& left;
-	const Matrix<T>& right;
-};
-
-template<typename T>
-MultithreadCalculator<T>::MultithreadCalculator(const Matrix<T>& left_, const Matrix<T>& right_, size_t threads_numb) :
-	left(left_), right(right_)
-{
-	int v = 5;
-}*/
 
 
 template<typename T>
@@ -37,7 +22,7 @@ public:
 	const std::vector<T> get_column(size_t idx) const;
 	Matrix<T> operator+(const Matrix<T>&right);
 
-	Matrix<T> multhread_sum(const Matrix<T>&right, const size_t threads_numb);
+	Matrix<T> multhread_sum(const Matrix<T>& left, const Matrix<T>&right, const size_t threads_numb);
 
 private:
 	size_t height = 0;
@@ -48,6 +33,24 @@ private:
 	bool check_eq_size(const std::vector<std::vector<T>>& rows) const;
 	bool size_mismatch(const Matrix<T>& right) const;
 };
+
+//template <typename T>
+//class MultithreadCalculator {
+//public:
+//	MultithreadCalculator(const Matrix<T>& left, const Matrix<T>& right, size_t threads_numb);
+//	Matrix<T> sum() const;
+//
+//private:
+//	const Matrix<T>& left;
+//	const Matrix<T>& right;
+//};
+//
+//template<typename T>
+//MultithreadCalculator<T>::MultithreadCalculator(const Matrix<T>& left_, const Matrix<T>& right_, size_t threads_numb) :
+//	left(left_), right(right_)
+//{
+//	int v = 5;
+//}
 
 template<typename T>
 Matrix<T>::Matrix(size_t width_, size_t height_) : width(width_), height(height_) {
@@ -125,14 +128,15 @@ inline Matrix<T> Matrix<T>::operator+(const Matrix<T>& right) {
 }
 
 template<typename T>
-inline Matrix<T> Matrix<T>::multhread_sum(const Matrix<T>& right, const size_t threads_numb)
+inline Matrix<T> Matrix<T>::multhread_sum(const Matrix<T>& left, const Matrix<T>& right, const size_t threads_numb)
 {
 	if (size_mismatch(right)) {
 		return Matrix<T>();
 	}
-	/*else {
-		MultiThreadCalculator<T> adder(*this, right, threads_numb);
-	}*/
+	else {
+		MultithreadCalculator<T> adder(*this, right, threads_numb);
+		return adder.sum();
+	}
 	
 }
 
