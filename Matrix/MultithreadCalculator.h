@@ -18,28 +18,20 @@ using idx_to = size_t;
 template <typename T>
 class MultithreadCalculator {
 public:
-	//MultithreadCalculator(const Matrix<T>& left, const Matrix<T>& right, size_t threads_numb);
 	MultithreadCalculator(Matrix<T>* left, Matrix<T>* right, size_t threads_numb);
+	MultithreadCalculator(const Matrix<T>* left, const Matrix<T>* right, size_t threads_numb);
 	Matrix<T> sum();
+	Matrix<T> multiply();
 
 	
 private:
-	//const Matrix<T>& left;
-	//const Matrix<T>& right;
 	Matrix<T>* left = nullptr;
 	Matrix<T>* right = nullptr;
 	size_t threads_numb = 0;
-	//Matrix<T> calc(void (*calc_f)(std::pair<size_t, size_t>&, Matrix<T>&, Matrix<T>&));
 	Matrix<T> calc(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>*, Matrix<T>*));
+	Matrix<T> calc(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, Matrix<T>* left_m, Matrix<T>* right_m));
 	std::vector<std::pair<size_t, size_t>> divide_matrix() const;
 };
-
-//template<typename T>
-//MultithreadCalculator<T>::MultithreadCalculator(const Matrix<T>& left_, const Matrix<T>& right_, size_t threads_numb_) :
-//	left(left_), right(right_), threads_numb(threads_numb_)
-//{
-//	int v = 5;
-//}
 
 template<typename T>
 inline MultithreadCalculator<T>::MultithreadCalculator(Matrix<T>* left_, Matrix<T>* right_, size_t threads_numb_) 
@@ -53,11 +45,27 @@ inline Matrix<T> MultithreadCalculator<T>::sum() {
 	return calc(&CalcFunctions::partial_sum);
 }
 
-void product(std::promise<void>&& intPromise, int a, int b) {
-	intPromise.set_value();
+template<typename T>
+inline Matrix<T> MultithreadCalculator<T>::multiply() {
+	return calc(&CalcFunctions::partial_mult);
 }
-int foo(int){
-	return 5;
+
+template<typename T>
+inline Matrix<T> MultithreadCalculator<T>::calc
+(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, Matrix<T>* left_m, Matrix<T>* right_m)) {
+	/*Ёто дл€ реализации умножени€, размеры результ матрицы мен€ютс€*/
+	Matrix<T> res(right->get_width(), left->get_height());
+	std::vector <std::pair<size_t, size_t>> line_interv = divide_matrix();
+	std::vector<std::future<void>> futures;
+	for (auto interval : line_interv) {
+		futures.push_back(std::async(std::launch::async, calc_f, interval, &res, left, right));
+	}
+	for (size_t i = 0; i < futures.size(); i++) /*auto it:futures deleted*/
+	{
+		futures[i].get();
+	}
+	return res;
+	
 }
 
 template<typename T>

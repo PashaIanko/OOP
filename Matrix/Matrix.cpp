@@ -132,6 +132,30 @@ TEST(MULTITHREAD_PLUS, different_strings_numb_for_threads) {
 	EXPECT_EQ(m.get_row(4), std::vector<int>({ 26, 28, 30 }));*/
 }
 
+TEST(MULTITHREAD_MULT, simple_test) {
+	Matrix<int> m
+	(
+		{
+		{1, 2},
+		}
+	);
+	Matrix<int> m2
+	(
+		{
+		{2},
+		{1},
+		}
+	);
+
+	//Matrix<int> m_res = m.multhread_multiply(&m2, 1);
+
+	EXPECT_EQ(m.get_width(), 1);
+	EXPECT_EQ(m.get_height(), 1);
+
+	EXPECT_EQ(m.get_row(0), std::vector<int>({ 5 }));
+	EXPECT_EQ(m.get_column(0), std::vector<int>({ 5 }));
+}
+
 int main(int argc, char *argv[])
 {
 	::testing::InitGoogleTest(&argc, argv);

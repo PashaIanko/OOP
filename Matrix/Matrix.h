@@ -20,9 +20,11 @@ public:
 	std::vector<T>& get_row(size_t idx);
 	const std::vector<T>& get_row(size_t idx) const;
 	const std::vector<T> get_column(size_t idx) const;
+	inline std::vector<std::vector<T>>& get_data();
 	
 	Matrix<T> operator+(const Matrix<T>&right);
 	Matrix<T> multhread_sum(Matrix<T>* left, Matrix<T>* right, const size_t threads_numb);
+	Matrix<T> multhread_multiply(Matrix<T>* right, size_t threads_numb) const;
 
 private:
 	size_t height = 0;
@@ -102,6 +104,11 @@ inline const std::vector<T> Matrix<T>::get_column(size_t idx) const {
 }
 
 template<typename T>
+inline std::vector<std::vector<T>>& Matrix<T>::get_data() {
+	return rows;
+}
+
+template<typename T>
 inline Matrix<T> Matrix<T>::operator+(const Matrix<T>& right) {
 	if (enable_multithread == false) {
 		return one_thread_sum(right);
@@ -120,6 +127,19 @@ inline Matrix<T> Matrix<T>::multhread_sum(Matrix<T>* left, Matrix<T>* right, con
 		return adder.sum();
 	}
 	
+}
+
+template<typename T>
+inline Matrix<T> Matrix<T>::multhread_multiply(Matrix<T>* right, size_t threads_numb) const
+{
+	if (get_width() != right->get_height()) {
+		return Matrix<T>();
+	}
+	else {
+		MultithreadCalculator<T> multiplier(this, right, threads_numb);
+		//return Matrix<T>();
+		return multiplier.multiply();
+	}
 }
 
 template<typename T>
