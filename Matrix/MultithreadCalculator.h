@@ -18,23 +18,23 @@ using idx_to = size_t;
 template <typename T>
 class MultithreadCalculator {
 public:
-	MultithreadCalculator(Matrix<T>* left, Matrix<T>* right, size_t threads_numb);
+	//MultithreadCalculator(Matrix<T>* left, Matrix<T>* right, size_t threads_numb);
 	MultithreadCalculator(const Matrix<T>* left, const Matrix<T>* right, size_t threads_numb);
 	Matrix<T> sum();
 	Matrix<T> multiply();
 
 	
 private:
-	Matrix<T>* left = nullptr;
-	Matrix<T>* right = nullptr;
+	const Matrix<T>* left = nullptr;
+	const Matrix<T>* right = nullptr;
 	size_t threads_numb = 0;
-	Matrix<T> calc(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>*, Matrix<T>*));
-	Matrix<T> calc(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, Matrix<T>* left_m, Matrix<T>* right_m));
+	Matrix<T> calc(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>*, const Matrix<T>*));
+	Matrix<T> calc(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, const Matrix<T>* left_m, const Matrix<T>* right_m));
 	std::vector<std::pair<size_t, size_t>> divide_matrix() const;
 };
 
 template<typename T>
-inline MultithreadCalculator<T>::MultithreadCalculator(Matrix<T>* left_, Matrix<T>* right_, size_t threads_numb_) 
+inline MultithreadCalculator<T>::MultithreadCalculator(const Matrix<T>* left_, const Matrix<T>* right_, size_t threads_numb_) 
 	: left(left_), right(right_), threads_numb(threads_numb_)
 {
 }
@@ -52,9 +52,10 @@ inline Matrix<T> MultithreadCalculator<T>::multiply() {
 
 template<typename T>
 inline Matrix<T> MultithreadCalculator<T>::calc
-(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, Matrix<T>* left_m, Matrix<T>* right_m)) {
+(void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, const Matrix<T>* left_m, const Matrix<T>* right_m)) {
 	/*Ёто дл€ реализации умножени€, размеры результ матрицы мен€ютс€*/
-	Matrix<T> res(right->get_width(), left->get_height());
+	//Matrix<T> res(right->get_width(), left->get_height());
+	Matrix<T> res(left->get_height(), right->get_width());
 	std::vector <std::pair<size_t, size_t>> line_interv = divide_matrix();
 	std::vector<std::future<void>> futures;
 	for (auto interval : line_interv) {
@@ -70,7 +71,7 @@ inline Matrix<T> MultithreadCalculator<T>::calc
 
 template<typename T>
 inline Matrix<T> MultithreadCalculator<T>::calc(
-	void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, Matrix<T>* right_matrix))
+	void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, const Matrix<T>* right_matrix))
 {
 	Matrix<T> res = *left;
 	std::vector <std::pair<size_t, size_t>> line_interv = divide_matrix();

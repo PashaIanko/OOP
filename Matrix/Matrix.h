@@ -24,7 +24,9 @@ public:
 	
 	Matrix<T> operator+(const Matrix<T>&right);
 	Matrix<T> multhread_sum(Matrix<T>* left, Matrix<T>* right, const size_t threads_numb);
-	Matrix<T> multhread_multiply(Matrix<T>* right, size_t threads_numb) const;
+	Matrix<T> multhread_multiply(const Matrix<T>* right, size_t threads_numb) const;
+
+	bool operator==(const Matrix<T>& right) const;
 
 private:
 	size_t height = 0;
@@ -40,8 +42,9 @@ template<typename T>
 Matrix<T>::Matrix(size_t width_, size_t height_) : width(width_), height(height_) {
 	try {
 		rows.resize(width);
-		for (auto it : rows) {
-			it.resize(height);
+		for (size_t i = 0; i < rows.size(); ++i) {
+			//it.resize(height);
+			rows[i].resize(height);
 		}
 	}
 	catch (...) {
@@ -67,6 +70,20 @@ Matrix<T>::Matrix(const std::vector<std::vector<T>>& rows_) {
 	else {
 		//throw ?
 	}
+}
+
+template<typename T>
+bool Matrix<T>::operator==(const Matrix<T>& right) const {
+	if (size_mismatch(right)) {
+		return false;
+	}
+	for (size_t i = 0; i < get_height(); i++)
+	{
+		bool if_eq = rows[i] == right.get_row(i);
+		if (if_eq == false)
+			return false;
+	}
+	return true;
 }
 
 template<typename T>
@@ -130,7 +147,7 @@ inline Matrix<T> Matrix<T>::multhread_sum(Matrix<T>* left, Matrix<T>* right, con
 }
 
 template<typename T>
-inline Matrix<T> Matrix<T>::multhread_multiply(Matrix<T>* right, size_t threads_numb) const
+inline Matrix<T> Matrix<T>::multhread_multiply(const Matrix<T>* right, size_t threads_numb) const
 {
 	if (get_width() != right->get_height()) {
 		return Matrix<T>();

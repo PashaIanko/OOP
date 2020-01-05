@@ -136,7 +136,7 @@ TEST(MULTITHREAD_MULT, simple_test) {
 	Matrix<int> m
 	(
 		{
-		{1, 2},
+		{1, 2, 0},
 		}
 	);
 	Matrix<int> m2
@@ -144,16 +144,68 @@ TEST(MULTITHREAD_MULT, simple_test) {
 		{
 		{2},
 		{1},
+		{0},
+		}
+	);
+	Matrix<int> expect(
+		{ {4}, }
+	);
+
+	Matrix<int> m_res = m.multhread_multiply(&m2, 1);
+	EXPECT_TRUE(m_res == expect);
+	//EXPECT_EQ(m_res.get_width(), 1);
+	//EXPECT_EQ(m_res.get_height(), 1);
+
+	//EXPECT_EQ(m_res.get_row(0), std::vector<int>({ 4 }));
+	//EXPECT_EQ(m_res.get_column(0), std::vector<int>({ 4 }));
+}
+
+TEST(MULTITHREAD_MULT, 3_x_3_identical_operator) {
+	Matrix<int> m
+	(
+		{
+		{1, 2, 0},
+		{1, 2, 0},
+		{1, 2, 0},
+		}
+	);
+	Matrix<int> m2
+	(
+		{
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1},
 		}
 	);
 
-	//Matrix<int> m_res = m.multhread_multiply(&m2, 1);
+	Matrix<int> m_res = m.multhread_multiply(&m2, 3);
+	EXPECT_TRUE(m_res == m);
+}
 
-	EXPECT_EQ(m.get_width(), 1);
-	EXPECT_EQ(m.get_height(), 1);
+TEST(MULTITHREAD_MULT, 3_x_3_mult_3_x_1_identical_operator) {
+	Matrix<int> m
+	(
+		{
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1},
+		}
+	);
+	Matrix<int> m2
+	(
+		{
+		{1},
+		{5},
+		{2},
+		}
+	);
 
-	EXPECT_EQ(m.get_row(0), std::vector<int>({ 5 }));
-	EXPECT_EQ(m.get_column(0), std::vector<int>({ 5 }));
+	Matrix<int> m_res = m.multhread_multiply(&m2, 3);
+	EXPECT_TRUE(m_res == m2);
+	//m_res = m.multhread_multiply(&m2, 2);
+	//EXPECT_TRUE(m_res == m2);
+	//m_res = m.multhread_multiply(&m2, 1);
+	//EXPECT_TRUE(m_res == m2);
 }
 
 int main(int argc, char *argv[])
