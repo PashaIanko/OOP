@@ -39,12 +39,11 @@ private:
 };
 
 template<typename T>
-Matrix<T>::Matrix(size_t width_, size_t height_) : width(width_), height(height_) {
+Matrix<T>::Matrix(size_t height_, size_t width_) : width(width_), height(height_) {
 	try {
-		rows.resize(width);
+		rows.resize(height);
 		for (size_t i = 0; i < rows.size(); ++i) {
-			//it.resize(height);
-			rows[i].resize(height);
+			rows[i].resize(width);
 		}
 	}
 	catch (...) {

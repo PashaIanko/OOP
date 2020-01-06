@@ -124,12 +124,6 @@ TEST(MULTITHREAD_PLUS, different_strings_numb_for_threads) {
 	EXPECT_EQ(m.get_row(3), std::vector<int>({ 20, 22, 24 }));
 	EXPECT_EQ(m.get_row(4), std::vector<int>({ 26, 28, 30 }));
 
-/*	m = m.multhread_sum(&m, &m2, 3);
-	EXPECT_EQ(m.get_row(0), std::vector<int>({ 2, 4, 6 }));
-	EXPECT_EQ(m.get_row(1), std::vector<int>({ 8, 10, 12 }));
-	EXPECT_EQ(m.get_row(2), std::vector<int>({ 14, 16, 18 }));
-	EXPECT_EQ(m.get_row(3), std::vector<int>({ 20, 22, 24 }));
-	EXPECT_EQ(m.get_row(4), std::vector<int>({ 26, 28, 30 }));*/
 }
 
 TEST(MULTITHREAD_MULT, simple_test) {
@@ -153,11 +147,6 @@ TEST(MULTITHREAD_MULT, simple_test) {
 
 	Matrix<int> m_res = m.multhread_multiply(&m2, 1);
 	EXPECT_TRUE(m_res == expect);
-	//EXPECT_EQ(m_res.get_width(), 1);
-	//EXPECT_EQ(m_res.get_height(), 1);
-
-	//EXPECT_EQ(m_res.get_row(0), std::vector<int>({ 4 }));
-	//EXPECT_EQ(m_res.get_column(0), std::vector<int>({ 4 }));
 }
 
 TEST(MULTITHREAD_MULT, 3_x_3_identical_operator) {
@@ -202,10 +191,36 @@ TEST(MULTITHREAD_MULT, 3_x_3_mult_3_x_1_identical_operator) {
 
 	Matrix<int> m_res = m.multhread_multiply(&m2, 3);
 	EXPECT_TRUE(m_res == m2);
-	//m_res = m.multhread_multiply(&m2, 2);
-	//EXPECT_TRUE(m_res == m2);
-	//m_res = m.multhread_multiply(&m2, 1);
-	//EXPECT_TRUE(m_res == m2);
+	m_res = m.multhread_multiply(&m2, 2);
+	EXPECT_TRUE(m_res == m2);
+	m_res = m.multhread_multiply(&m2, 1);
+	EXPECT_TRUE(m_res == m2);
+}
+
+TEST(MULTITHREAD_MULT, 3_x_3_mult_3_x_2_identical_operator) {
+	Matrix<int> m
+	(
+		{
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1},
+		}
+	);
+	Matrix<int> m2
+	(
+		{
+		{1, 2},
+		{5, 3},
+		{2, 4},
+		}
+	);
+
+	Matrix<int> m_res = m.multhread_multiply(&m2, 3);
+	EXPECT_TRUE(m_res == m2);
+	m_res = m.multhread_multiply(&m2, 2);
+	EXPECT_TRUE(m_res == m2);
+	m_res = m.multhread_multiply(&m2, 1);
+	EXPECT_TRUE(m_res == m2);
 }
 
 int main(int argc, char *argv[])
