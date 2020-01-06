@@ -44,5 +44,26 @@ namespace CalcFunctions {
 		}
 		return;
 	};
+
+	template<typename T>
+	static T partial_det(std::pair<size_t, size_t> from_to, const Matrix<T>* matrix) {
+		/*считает aij*Aij, Aij = (-1)^(i+j)*Mij*/
+		/*разложение по нулевой строке*/
+		size_t column_from = from_to.first;
+		size_t column_to = from_to.second;
+		T result;
+		const std::vector<std::vector<T>>& m_data = matrix->get_data();
+		for (size_t j = column_from; j < column_to; j++) {
+			T aij = m_data[0][j];
+			//result += pow(-1, j)*aij*CalcFunctions::minor(matrix, i, j);
+		}
+		return T{};
+	};
+
+	template<typename T>
+	static T minor(const Matrix<T>* matrix, size_t line, size_t column) {
+		//Matrix<T> shorter = CalcFunctions::cut_matrix(matrix, line, column);
+		//return CalcFunctions::det()
+	}
 	
 }

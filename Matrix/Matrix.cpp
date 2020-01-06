@@ -223,6 +223,18 @@ TEST(MULTITHREAD_MULT, 3_x_3_mult_3_x_2_identical_operator) {
 	EXPECT_TRUE(m_res == m2);
 }
 
+TEST(MULTITHREAD_DET, 3_x_3_identical_operator) {
+	Matrix<int> m
+	(
+		{
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1},
+		}
+	);
+	EXPECT_EQ(m.multhread_det(3), 1);
+}
+
 int main(int argc, char *argv[])
 {
 	::testing::InitGoogleTest(&argc, argv);

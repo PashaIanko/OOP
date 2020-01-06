@@ -21,10 +21,13 @@ public:
 	const std::vector<T>& get_row(size_t idx) const;
 	const std::vector<T> get_column(size_t idx) const;
 	inline std::vector<std::vector<T>>& get_data();
+	inline const std::vector<std::vector<T>>& get_data() const;
 	
 	Matrix<T> operator+(const Matrix<T>&right);
 	Matrix<T> multhread_sum(Matrix<T>* left, Matrix<T>* right, const size_t threads_numb);
 	Matrix<T> multhread_multiply(const Matrix<T>* right, size_t threads_numb) const;
+
+	T multhread_det(size_t threads_numb) const;
 
 	bool operator==(const Matrix<T>& right) const;
 
@@ -125,6 +128,11 @@ inline std::vector<std::vector<T>>& Matrix<T>::get_data() {
 }
 
 template<typename T>
+inline const std::vector<std::vector<T>>& Matrix<T>::get_data() const {
+	return rows;
+}
+
+template<typename T>
 inline Matrix<T> Matrix<T>::operator+(const Matrix<T>& right) {
 	if (enable_multithread == false) {
 		return one_thread_sum(right);
@@ -156,6 +164,25 @@ inline Matrix<T> Matrix<T>::multhread_multiply(const Matrix<T>* right, size_t th
 		//return Matrix<T>();
 		return multiplier.multiply();
 	}
+}
+
+template<typename T>
+inline T Matrix<T>::multhread_det(size_t threads_numb) const {
+	if (width != height) {
+		//throw?
+		return T{};
+	}
+	MultithreadCalculator<T> calculator(this, threads_numb);
+	return calculator.det(&CalcFunctions::partial_det);
+	//size_t columns_per_thread = (size_t) (width / threads_numb); /*разложение по нулевой строке*/
+	//if (columns_per_thread == 0) { /*ширина меньше кол-ва потоков*/
+	//	columns_per_thread = 1;
+	//}
+
+	//if (threads_count == 1) return simple_det(mat);
+	//if (threads_count > num_of_threads) threads_count = num_of_threads;
+	//CalculationManager det_calculator(mat, threads_count);
+	//return det_calculator.determinant();
 }
 
 template<typename T>
