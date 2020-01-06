@@ -116,49 +116,16 @@ inline Matrix<T> MultithreadCalculator<T>::calc(
 template<typename T>
 inline std::vector<std::pair<size_t, size_t>> MultithreadCalculator<T>::divide_matrix() const
 {
-	//size_t numb_of_strings = left->get_height();
-	//size_t strings_per_thread = (size_t)(numb_of_strings / threads_numb);
-
-	//if (strings_per_thread == 0) /*потоков больше чем строк*/
-	//{
-	//	strings_per_thread = 1;
-	//}
-	//std::vector<std::pair<size_t, size_t>> result;
-	//size_t from;
-	//size_t to;
-	//for (size_t i = 0; i < numb_of_strings; i+=strings_per_thread) {
-	//	from = i;
-	//	to = i + strings_per_thread; //[0,3),[3,7),...
-	//	if (to > numb_of_strings) {
-	//		to = numb_of_strings;
-	//		result.push_back({ from, to });
-	//		break;
-	//	}
-	//	result.push_back({from, to});
-	//}
-	//return result;
-
 	std::vector<std::pair<size_t, size_t>> result;
 	size_t numb_of_strings = left->get_height();
 	size_t strings_per_thread = (size_t)(numb_of_strings / threads_numb);
-	//if (strings_per_thread == 0) /*потоков больше чем строк*/
-	//{
-		//strings_per_thread = 1;
-	//}
 	size_t from = 0;
 	for (size_t i = 0; i < threads_numb; i++)
 	{
 		result.push_back({ from , from + strings_per_thread });
 		from += strings_per_thread;
-		//if (from + strings_per_thread >= numb_of_strings) {
-			//break;
-		//}
 	}
 	result[threads_numb - 1].second = numb_of_strings;
 	return result;
 }
 
-//template<typename T>
-//inline void MultithreadCalculator<T>::partial_sum(std::pair<idx_from, idx_to>&, std::shared_ptr<Matrix<T>>&) {
-//	return;
-//}

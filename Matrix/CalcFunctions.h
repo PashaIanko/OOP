@@ -51,19 +51,63 @@ namespace CalcFunctions {
 		/*разложение по нулевой строке*/
 		size_t column_from = from_to.first;
 		size_t column_to = from_to.second;
-		T result;
+		T result{};
 		const std::vector<std::vector<T>>& m_data = matrix->get_data();
 		for (size_t j = column_from; j < column_to; j++) {
 			T aij = m_data[0][j];
-			//result += pow(-1, j)*aij*CalcFunctions::minor(matrix, i, j);
+			result += pow(-1, j)*aij*CalcFunctions::minor(matrix, 0, j); 
+			//0 - без первой строки, разложение по 1ой строке
 		}
-		return T{};
+		return result;
 	};
 
 	template<typename T>
 	static T minor(const Matrix<T>* matrix, size_t line, size_t column) {
-		//Matrix<T> shorter = CalcFunctions::cut_matrix(matrix, line, column);
-		//return CalcFunctions::det()
+		Matrix<T> shorter_m = CalcFunctions::cut_matrix(matrix, line, column);
+		return CalcFunctions::simple_det(&shorter_m);
 	}
-	
+
+	template<typename T>
+	Matrix<T> cut_matrix(const Matrix<T>* matrix, size_t line, size_t column) {
+		Matrix<T> result(matrix->get_width() - 1, matrix->get_height() -1);
+
+		const std::vector<std::vector<T>>& m_data = matrix->get_data();
+		size_t height = matrix->get_height();
+		size_t m_width = matrix->get_width();
+
+		size_t result_rows_counter = 0;
+		for (size_t i = 0; i < height; i++) {
+			if (i != line) {
+				std::vector<T>& result_data = result.get_row(result_rows_counter);
+				std::vector<T> matrix_data = matrix->get_row(i);
+				matrix_data.erase(matrix_data.begin() + column);
+				std::copy(matrix_data.begin(), matrix_data.end(), result_data.begin());
+				result_rows_counter++;
+			}
+		}
+		return result;
+
+	};
+
+	template<typename T>
+	T simple_det(const Matrix<T>* m) {
+		T result{};
+		size_t m_width = m->get_width();
+		size_t m_height= m->get_height();
+		if (m_width == m_height) {
+			const std::vector<std::vector<T>>& m_data = m->get_data();
+			if (m_width == 1) {
+				return m_data[0][0];
+			}
+			if (m_width == 2) {
+				return (m_data[0][0] * m_data[1][1] - m_data[0][1] * m_data[1][0]);
+			}
+			else {
+				for (size_t j = 0; j < m_width; j++) {
+					result += m_data[0][j] * pow(-1, /*i+j i=0*/j)*CalcFunctions::minor(m, 0, j);
+				}
+			}
+		}
+		return result;
+	}
 }

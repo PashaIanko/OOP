@@ -235,6 +235,73 @@ TEST(MULTITHREAD_DET, 3_x_3_identical_operator) {
 	EXPECT_EQ(m.multhread_det(3), 1);
 }
 
+TEST(MULTITHREAD_DET, 3_x_3) {
+	Matrix<int> m
+	(
+		{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 7, 9},
+		}
+	);
+	EXPECT_EQ(m.multhread_det(3), -6);
+	EXPECT_EQ(m.multhread_det(2), -6);
+	EXPECT_EQ(m.multhread_det(1), -6);
+}
+
+TEST(MULTITHREAD_DET, 3_x_3_threads_more_than_columns) {
+	Matrix<int> m
+	(
+		{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 7, 9},
+		}
+	);
+	EXPECT_EQ(m.multhread_det(4), -6);
+}
+
+TEST(MULTITHREAD_DET, 4_x_4) {
+	Matrix<int> m
+	(
+		{
+		{0, 2, 3, 4},
+		{5, 6, 7, 8},
+		{9, 10, 11, 12},
+		{13, 14, 15, 15},
+		}
+	);
+	EXPECT_EQ(m.multhread_det(4), -4);
+	EXPECT_EQ(m.multhread_det(3), -4);
+	EXPECT_EQ(m.multhread_det(2), -4);
+	EXPECT_EQ(m.multhread_det(1), -4);
+}
+
+TEST(CALC_FUNCTIONS_ONE_THREAD_DET, 3_x_3) {
+	Matrix<int> m
+	(
+		{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 7, 9},
+		}
+	);
+	EXPECT_EQ(CalcFunctions::simple_det(&m), -6);
+}
+
+TEST(CALC_FUNCTIONS_ONE_THREAD_DET, 4_x_4) {
+	Matrix<int> m
+	(
+		{
+		{0, 2, 3, 4},
+		{5, 6, 7, 8},
+		{9, 10, 11, 12},
+		{13, 14, 15, 15},
+		}
+	);
+	EXPECT_EQ(CalcFunctions::simple_det(&m), -4);
+}
+
 int main(int argc, char *argv[])
 {
 	::testing::InitGoogleTest(&argc, argv);
