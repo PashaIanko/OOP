@@ -2,6 +2,21 @@
 #include <iostream>
 #include "gtest\gtest.h"
 #include "Matrix.h"
+#include <chrono>
+
+template<typename T>
+T investigate_det(const Matrix<T>* matrix, size_t threads_numb)
+{
+	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+	T det = matrix->multhread_det(threads_numb);
+	std::chrono::duration<double> dur = std::chrono::system_clock::now() - start;
+	std::cout << "Investigation matrix[" << matrix->get_height()
+		<< "][" << matrix->get_width() << "], " 
+		<< threads_numb << "threads took " 
+		<< dur.count() << 
+		"tacts" << std::endl;
+	return det;
+}
 
 
 TEST(Ctor, init_list) {
@@ -301,6 +316,188 @@ TEST(CALC_FUNCTIONS_ONE_THREAD_DET, 4_x_4) {
 	);
 	EXPECT_EQ(CalcFunctions::simple_det(&m), -4);
 }
+
+TEST(CALC_FUNCTIONS_ONE_THREAD_DET, 7_x_7) {
+	Matrix<int> m
+	(
+		{
+		{1, 0, 0, 0, 0, 8, 4},
+		{0, 1, 0, 0, 0, 8, 5},
+		{0, 0, 1, 0, 0, 8, 6},
+		{0, 0, 0, 1, 0, 8, 7},
+		{0, 7, 0, 0, 1, 0, 0},
+		{0, 7, 0, 0, 0, 1, 0},
+		{0, 7, 0, 0, 0, 0, 1},
+		}
+	);
+	EXPECT_EQ(CalcFunctions::simple_det(&m), -90);
+}
+
+/*TEST(MULTITHREAD_DET, 10_x_10) {
+	Matrix<int> m
+	(
+		{
+		{1, 4, 5, 10, -3, 2, 1, 1, 1, 1},
+		{1, 1, 1, 1, 4, 5, 6, 7, 9, 0},
+		{3, 4, 4, 4, 4, 5, 6, 8, 0, 0},
+		{2, 1, 7, 6, 8, 9, 10, 3, 2, 1},
+		{2, 1, 3, 5, 7, 8, 4, 4, 4, 4},
+		{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		{2, 1, 4, 3, 6, 7, 7, 2, 4, 25},
+		{1, 4, 2, 3, 5, 6, 2, 1, 8, 9},
+		{0, 1, 5, 3, 2, 6, 5, 4, 7, 8},
+		{1, 4, 5, 2, 0, 9, 10, 7, 8, 2}
+		}
+	);
+	int res = -5208;
+	EXPECT_EQ(CalcFunctions::simple_det(&m), res);
+	//EXPECT_EQ(m.multhread_det(4), res);
+	//EXPECT_EQ(m.multhread_det(3), res);
+	//EXPECT_EQ(m.multhread_det(2), res);
+	//EXPECT_EQ(m.multhread_det(1), res);
+}*/
+
+
+
+
+
+
+
+static Matrix<int> investigation_matrix_500(500, 500, 1);
+static Matrix<int> investigation_matrix_1000(1000, 1000, 1);
+static Matrix<int> investigation_matrix_5000(5000, 5000, 1);
+static Matrix<int> investigation_matrix_10000(10000, 10000, 1);
+static Matrix<int> investigation_matrix_250(250, 250, 1);
+static Matrix<int> investigation_matrix_100(100, 100, 1);
+
+/*TEST(MULTITHREAD_DET_INVESTIGATION, investigation) {
+	int det = investigate_det(&investigation_matrix, 10);
+	EXPECT_EQ(det, 0);
+}*/
+
+template<typename T>
+std::chrono::duration<double> investigate_sum(Matrix<T>* matrix, size_t threads_numb) {
+	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+	Matrix<T> m = matrix->multhread_sum(matrix, matrix, threads_numb);
+	std::chrono::duration<double> dur = std::chrono::system_clock::now() - start;
+	std::cout << "Investigation matrix[" << matrix->get_height()
+		<< "][" << matrix->get_width() << "], "
+		<< threads_numb << "threads summ took "
+		<< dur.count() <<
+		"tacts" << std::endl;
+	return dur;
+}
+
+template<typename T>
+std::chrono::duration<double> investigate_mult(Matrix<T>* matrix_, size_t threads_numb) {
+	Matrix<T> matrix = *matrix_;
+	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+	Matrix<T> m = matrix.multhread_multiply(matrix_, threads_numb); 
+	std::chrono::duration<double> dur = std::chrono::system_clock::now() - start;
+	std::cout << "Investigation matrix[" << matrix.get_height()
+		<< "][" << matrix.get_width() << "], "
+		<< threads_numb << "threads multiply took "
+		<< dur.count() <<
+		"tacts" << std::endl;
+	return dur;
+}
+
+TEST(MULTITHREAD_SUM_INVESTIGATION, investigation_500_x_500) {
+	std::chrono::duration<double> dur;
+	dur = investigate_sum(&investigation_matrix_500, 1);
+	dur = investigate_sum(&investigation_matrix_500, 2);
+	dur = investigate_sum(&investigation_matrix_500, 3);
+	dur = investigate_sum(&investigation_matrix_500, 4);
+	dur = investigate_sum(&investigation_matrix_500, 5);
+	dur = investigate_sum(&investigation_matrix_500, 6);
+	dur = investigate_sum(&investigation_matrix_500, 7);
+	dur = investigate_sum(&investigation_matrix_500, 8);
+	dur = investigate_sum(&investigation_matrix_500, 9);
+	dur = investigate_sum(&investigation_matrix_500, 10);
+}
+
+TEST(MULTITHREAD_SUM_INVESTIGATION, investigation_1000_x_1000) {
+	std::chrono::duration<double> dur;
+	dur = investigate_sum(&investigation_matrix_1000, 1);
+	dur = investigate_sum(&investigation_matrix_1000, 2);
+	dur = investigate_sum(&investigation_matrix_1000, 3);
+	dur = investigate_sum(&investigation_matrix_1000, 4);
+	dur = investigate_sum(&investigation_matrix_1000, 5);
+	dur = investigate_sum(&investigation_matrix_1000, 6);
+	dur = investigate_sum(&investigation_matrix_1000, 7);
+	dur = investigate_sum(&investigation_matrix_1000, 8);
+	dur = investigate_sum(&investigation_matrix_1000, 9);
+	dur = investigate_sum(&investigation_matrix_1000, 10);
+}
+
+TEST(MULTITHREAD_SUM_INVESTIGATION, investigation_5000_x_5000) {
+	std::chrono::duration<double> dur;
+	dur = investigate_sum(&investigation_matrix_5000, 1);
+	dur = investigate_sum(&investigation_matrix_5000, 2);
+	dur = investigate_sum(&investigation_matrix_5000, 3);
+	dur = investigate_sum(&investigation_matrix_5000, 4);
+	dur = investigate_sum(&investigation_matrix_5000, 5);
+	dur = investigate_sum(&investigation_matrix_5000, 6);
+	dur = investigate_sum(&investigation_matrix_5000, 7);
+	dur = investigate_sum(&investigation_matrix_5000, 8);
+	dur = investigate_sum(&investigation_matrix_5000, 9);
+	dur = investigate_sum(&investigation_matrix_5000, 10);
+}
+
+TEST(MULTITHREAD_SUM_INVESTIGATION, investigation_250_x_250) {
+	std::chrono::duration<double> dur;
+	dur = investigate_sum(&investigation_matrix_250, 1);
+	dur = investigate_sum(&investigation_matrix_250, 2);
+	dur = investigate_sum(&investigation_matrix_250, 3);
+}
+
+TEST(MULTITHREAD_SUM_INVESTIGATION, investigation_100_x_100) {
+	std::chrono::duration<double> dur;
+	dur = investigate_sum(&investigation_matrix_100, 1);
+	dur = investigate_sum(&investigation_matrix_100, 2);
+	dur = investigate_sum(&investigation_matrix_100, 3);
+}
+
+TEST(MULTITHREAD_MULT_INVESTIGATION, investigation_100_x_100) {
+	std::chrono::duration<double> dur;
+	dur = investigate_mult(&investigation_matrix_100, 1);
+	dur = investigate_mult(&investigation_matrix_100, 2);
+	dur = investigate_mult(&investigation_matrix_100, 3);
+	dur = investigate_mult(&investigation_matrix_100, 4);
+	dur = investigate_mult(&investigation_matrix_100, 5);
+	dur = investigate_mult(&investigation_matrix_100, 6);
+}
+
+TEST(MULTITHREAD_MULT_INVESTIGATION, investigation_250_x_250) {
+	std::chrono::duration<double> dur;
+	dur = investigate_mult(&investigation_matrix_250, 1);
+	dur = investigate_mult(&investigation_matrix_250, 2);
+	dur = investigate_mult(&investigation_matrix_250, 3);
+	dur = investigate_mult(&investigation_matrix_250, 4);
+	dur = investigate_mult(&investigation_matrix_250, 5);
+	dur = investigate_mult(&investigation_matrix_250, 6);
+}
+
+TEST(MULTITHREAD_MULT_INVESTIGATION, investigation_1000_x_1000) {
+	std::chrono::duration<double> dur;
+	dur = investigate_mult(&investigation_matrix_1000, 1);
+	dur = investigate_mult(&investigation_matrix_1000, 2);
+	dur = investigate_mult(&investigation_matrix_1000, 3);
+	dur = investigate_mult(&investigation_matrix_1000, 4);
+	dur = investigate_mult(&investigation_matrix_1000, 5);
+	dur = investigate_mult(&investigation_matrix_1000, 6);
+}
+
+TEST(MULTITHREAD_MULT_INVESTIGATION, investigation_500_x_500) {
+	std::chrono::duration<double> dur;
+	dur = investigate_mult(&investigation_matrix_500, 1);
+	dur = investigate_mult(&investigation_matrix_500, 2);
+	dur = investigate_mult(&investigation_matrix_500, 3);
+	dur = investigate_mult(&investigation_matrix_500, 4);
+	dur = investigate_mult(&investigation_matrix_500, 5);
+	dur = investigate_mult(&investigation_matrix_500, 6);
+}
+
 
 int main(int argc, char *argv[])
 {

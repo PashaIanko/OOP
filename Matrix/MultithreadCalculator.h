@@ -23,6 +23,7 @@ public:
 	
 	Matrix<T> sum();
 	Matrix<T> multiply();
+	Matrix<T> subtract();
 	T det(T(*calc_f)(std::pair<size_t, size_t>, const Matrix<T>* matrix));
 
 	
@@ -57,6 +58,12 @@ inline Matrix<T> MultithreadCalculator<T>::sum() {
 template<typename T>
 inline Matrix<T> MultithreadCalculator<T>::multiply() {
 	return calc(&CalcFunctions::partial_mult);
+}
+
+template<typename T>
+inline Matrix<T> MultithreadCalculator<T>::subtract()
+{
+	return calc(&CalcFunctions::partial_subtract);
 }
 
 template<typename T>

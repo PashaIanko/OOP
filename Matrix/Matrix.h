@@ -13,6 +13,8 @@ public:
 	Matrix() = default;
 	Matrix(size_t width, size_t height);
 	Matrix(const std::vector<std::vector<T>>& data);
+	Matrix(size_t width, size_t height, T& default_val);
+	Matrix(size_t width, size_t height, T&& default_val);
 
 
 	inline size_t get_width() const { return width; };
@@ -24,12 +26,18 @@ public:
 	inline const std::vector<std::vector<T>>& get_data() const;
 	
 	Matrix<T> operator+(const Matrix<T>&right);
-	Matrix<T> multhread_sum(Matrix<T>* left, Matrix<T>* right, const size_t threads_numb);
+
+	Matrix<T> multhread_sum(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb);
 	Matrix<T> multhread_multiply(const Matrix<T>* right, size_t threads_numb) const;
+	Matrix<T> multhread_subtract(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const;
 
 	T multhread_det(size_t threads_numb) const;
 
 	bool operator==(const Matrix<T>& right) const;
+	bool operator!=(const Matrix<T>& right) const;
+
+	Matrix<T>& operator=(const Matrix<T>& right) = default;
+
 
 private:
 	size_t height = 0;
@@ -39,20 +47,17 @@ private:
 	Matrix<T> one_thread_sum(const Matrix<T>& right);
 	bool check_eq_size(const std::vector<std::vector<T>>& rows) const;
 	bool size_mismatch(const Matrix<T>& right) const;
+	void resize_rows(const size_t height, const size_t width);
 };
 
 template<typename T>
 Matrix<T>::Matrix(size_t height_, size_t width_) : width(width_), height(height_) {
 	try {
-		rows.resize(height);
-		for (size_t i = 0; i < rows.size(); ++i) {
-			rows[i].resize(width);
-		}
+		resize_rows(height, width);
 	}
 	catch (...) {
 		std::cout << "bad alloc";
 	}
-	
 }
 
 template<typename T>
@@ -71,6 +76,39 @@ Matrix<T>::Matrix(const std::vector<std::vector<T>>& rows_) {
 	}
 	else {
 		//throw ?
+	}
+}
+
+template<typename T>
+inline Matrix<T>::Matrix(size_t width_, size_t height_, T & default_val) 
+	: width(width_), height(height_)
+{
+	try {
+		resize_rows(height, width);
+	}
+	catch (...) {
+
+	}
+	for (size_t i = 0; i < rows.size(); i++) {
+		std::vector<T>& cur_row = rows[i];
+		std::fill(cur_row.begin(), cur_row.end(), default_val);
+	}
+}
+
+template<typename T>
+inline Matrix<T>::Matrix(size_t width_, size_t height_, T && default_val) 
+	: width(width_), height(height_)
+
+{
+	try {
+		resize_rows(height, width);
+	}
+	catch (...) {
+
+	}
+	for (size_t i = 0; i < rows.size(); i++) {
+		std::vector<T>& cur_row = rows[i];
+		std::fill(cur_row.begin(), cur_row.end(), default_val);
 	}
 }
 
@@ -141,7 +179,7 @@ inline Matrix<T> Matrix<T>::operator+(const Matrix<T>& right) {
 }
 
 template<typename T>
-inline Matrix<T> Matrix<T>::multhread_sum(Matrix<T>* left, Matrix<T>* right, const size_t threads_numb)
+inline Matrix<T> Matrix<T>::multhread_sum(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb)
 {
 	if (size_mismatch(*right)) {
 		return Matrix<T>();
@@ -167,6 +205,18 @@ inline Matrix<T> Matrix<T>::multhread_multiply(const Matrix<T>* right, size_t th
 }
 
 template<typename T>
+inline Matrix<T> Matrix<T>::multhread_subtract(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const
+{
+	if (size_mismatch(*right)) {
+		return Matrix<T>();
+	}
+	else {
+		MultithreadCalculator<T> subtractor(left, right, threads_numb);
+		return subtractor.subtract();
+	}
+}
+
+template<typename T>
 inline T Matrix<T>::multhread_det(size_t threads_numb) const {
 	if (width != height) {
 		//throw?
@@ -174,6 +224,11 @@ inline T Matrix<T>::multhread_det(size_t threads_numb) const {
 	}
 	MultithreadCalculator<T> calculator(this, threads_numb);
 	return calculator.det(&CalcFunctions::partial_det);
+}
+
+template<typename T>
+inline bool Matrix<T>::operator!=(const Matrix<T>& right) const {
+	return !(this->operator==(right));
 }
 
 template<typename T>
@@ -219,6 +274,14 @@ template<typename T>
 inline bool Matrix<T>::size_mismatch(const Matrix<T>& right) const
 {
 	return width != right.width || height != right.height;
+}
+
+template<typename T>
+inline void Matrix<T>::resize_rows(const size_t height, const size_t width) {
+	rows.resize(height);
+	for (size_t i = 0; i < rows.size(); ++i) {
+		rows[i].resize(width);
+	}
 }
 
 
