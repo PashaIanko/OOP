@@ -174,15 +174,6 @@ inline T Matrix<T>::multhread_det(size_t threads_numb) const {
 	}
 	MultithreadCalculator<T> calculator(this, threads_numb);
 	return calculator.det(&CalcFunctions::partial_det);
-	//size_t columns_per_thread = (size_t) (width / threads_numb); /*разложение по нулевой строке*/
-	//if (columns_per_thread == 0) { /*ширина меньше кол-ва потоков*/
-	//	columns_per_thread = 1;
-	//}
-
-	//if (threads_count == 1) return simple_det(mat);
-	//if (threads_count > num_of_threads) threads_count = num_of_threads;
-	//CalculationManager det_calculator(mat, threads_count);
-	//return det_calculator.determinant();
 }
 
 template<typename T>

@@ -119,6 +119,21 @@ inline std::vector<std::pair<size_t, size_t>> MultithreadCalculator<T>::divide_m
 	std::vector<std::pair<size_t, size_t>> result;
 	size_t numb_of_strings = left->get_height();
 	size_t strings_per_thread = (size_t)(numb_of_strings / threads_numb);
+
+	if (strings_per_thread == 0) {
+		strings_per_thread = 1;
+		size_t from = 0;
+		for (size_t i = 0; i < numb_of_strings; i++)
+		{
+			result.push_back({ from , from + strings_per_thread });
+			from += strings_per_thread;
+		}
+		for (size_t i = 0; i < threads_numb - numb_of_strings; i++) {
+			result.push_back({ 0, 0 });
+		}
+		return result;
+	}
+
 	size_t from = 0;
 	for (size_t i = 0; i < threads_numb; i++)
 	{
