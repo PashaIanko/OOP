@@ -26,28 +26,33 @@ public:
 	inline const std::vector<std::vector<T>>& get_data() const;
 	
 	Matrix<T> operator+(const Matrix<T>&right);
+	Matrix<T> operator-(const Matrix<T>&right);
 
 	Matrix<T> multhread_sum(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb);
 	Matrix<T> multhread_multiply(const Matrix<T>* right, size_t threads_numb) const;
 	Matrix<T> multhread_subtract(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const;
-
 	T multhread_det(size_t threads_numb) const;
 
 	bool operator==(const Matrix<T>& right) const;
 	bool operator!=(const Matrix<T>& right) const;
 
-	Matrix<T>& operator=(const Matrix<T>& right) = default;
+	Matrix<T>& operator=(const Matrix<T>& right);
 
+	void enable_multithreading();
+	void disable_multithreading();
 
 private:
 	size_t height = 0;
 	size_t width = 0;
 	std::vector<std::vector<T>> rows{};
 	bool enable_multithread = false;
-	Matrix<T> one_thread_sum(const Matrix<T>& right);
+	
 	bool check_eq_size(const std::vector<std::vector<T>>& rows) const;
 	bool size_mismatch(const Matrix<T>& right) const;
 	void resize_rows(const size_t height, const size_t width);
+
+	const double multithread_sum_optimization_parameter = 250; /*Результат исследования*/
+	const size_t max_threads_limit = 5;
 };
 
 template<typename T>
@@ -173,10 +178,44 @@ inline const std::vector<std::vector<T>>& Matrix<T>::get_data() const {
 template<typename T>
 inline Matrix<T> Matrix<T>::operator+(const Matrix<T>& right) {
 	if (enable_multithread == false) {
-		return one_thread_sum(right);
+		return multhread_sum(this, &right, 1);
+	}
+	else {
+		/*Результаты исследования в екселе. Меджик намбер == 873,91. (Колво строк/меджик_набмер)
+		== оптимальное кол-во потоков + позаботиться, чтобы оно не превышало оговорённый порог (~5 потоков)*/
+		size_t optimal_threads_numb = (size_t)
+			(right.get_height() / multithread_sum_optimization_parameter);
+		if (optimal_threads_numb == 0)
+			optimal_threads_numb = 1;
+		if (optimal_threads_numb > max_threads_limit)
+			optimal_threads_numb = max_threads_limit;
+		else {
+			return multhread_sum(this, &right, optimal_threads_numb);
+		}
 	}
 	
 }
+
+template<typename T>
+inline Matrix<T> Matrix<T>::operator-(const Matrix<T>& right) {
+	if (enable_multithread == false) {
+		return multhread_subtract(this, &right, 1);
+	}
+	else {
+		/*Результаты исследования в екселе. Меджик намбер == 873,91. (Колво строк/меджик_набмер)
+		== оптимальное кол-во потоков + позаботиться, чтобы оно не превышало оговорённый порог (~5 потоков)*/
+		size_t optimal_threads_numb = (size_t)
+			(right.get_height() / multithread_sum_optimization_parameter);
+		if (optimal_threads_numb == 0)
+			optimal_threads_numb = 1;
+		if (optimal_threads_numb > max_threads_limit)
+			optimal_threads_numb = max_threads_limit;
+		else {
+			return multhread_subtract(this, &right, optimal_threads_numb);
+		}
+	}
+}
+
 
 template<typename T>
 inline Matrix<T> Matrix<T>::multhread_sum(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb)
@@ -199,7 +238,6 @@ inline Matrix<T> Matrix<T>::multhread_multiply(const Matrix<T>* right, size_t th
 	}
 	else {
 		MultithreadCalculator<T> multiplier(this, right, threads_numb);
-		//return Matrix<T>();
 		return multiplier.multiply();
 	}
 }
@@ -232,26 +270,24 @@ inline bool Matrix<T>::operator!=(const Matrix<T>& right) const {
 }
 
 template<typename T>
-inline Matrix<T> Matrix<T>::one_thread_sum(const Matrix<T>& right) {
-	
-	if (size_mismatch(right)) {
-		//throw()? Если размеры не совпадают
-		return Matrix<T>();
+inline Matrix<T>& Matrix<T>::operator=(const Matrix<T>& right) {
+	if (*this != right) {
+		height = right.get_height();
+		width = right.get_width();
+		rows = right.rows;
+		enable_multithread = right.enable_multithread;
 	}
-	else {
-		Matrix result(*this);
-		size_t i = 0;
-		for (auto row_rhs : right.rows) {
-			std::vector<T>& row_lhs = result.get_row(i);
-			/*summ_rows*/
-			for (size_t j = 0; j < row_lhs.size(); j++) {
-				row_lhs[j] += row_rhs[j];
-			}
-			i++;
-		}
-		return result;
-	}
-	
+	return *this;
+}
+
+template<typename T>
+inline void Matrix<T>::enable_multithreading() {
+	enable_multithread = true;
+}
+
+template<typename T>
+inline void Matrix<T>::disable_multithreading() {
+	enable_multithread = false;
 }
 
 template<typename T>

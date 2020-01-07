@@ -123,6 +123,8 @@ inline Matrix<T> MultithreadCalculator<T>::calc(
 template<typename T>
 inline std::vector<std::pair<size_t, size_t>> MultithreadCalculator<T>::divide_matrix() const
 {
+	if (threads_numb == 0)
+		threads_numb == 1;
 	std::vector<std::pair<size_t, size_t>> result;
 	size_t numb_of_strings = left->get_height();
 	size_t strings_per_thread = (size_t)(numb_of_strings / threads_numb);
