@@ -44,17 +44,33 @@ namespace CalcFunctions {
 		size_t to = from_to.second;
 		size_t right_width = right_m->get_width();
 
+		//for (size_t i = from; i < to; i++) {
+		//	const std::vector<T>& cur_row_left = left_m->get_row(i);
+		//	/*строку на все столбцы правой перемножаем, поочерЄдно записыва€ в €чейки результат*/
+		//	for (size_t j = 0; j < right_width; j++) {
+		//		std::vector<T> cur_column_right = right_m->get_column(j);
+		//		T res_val{};
+		//		for (size_t k = 0; k < cur_row_left.size(); k++) {
+		//			res_val += cur_row_left[k] * cur_column_right[k];
+		//		}
+		//		std::vector<std::vector<T>>& data = res->get_data();
+		//		data[i][j] = res_val;
+		//	}
+		//}
+		//return;
+		size_t left_width = left_m->get_width();
+		std::vector<std::vector<T>>& res_data = res->get_data();
+		const std::vector<std::vector<T>>& r_matrix_data = right_m->get_data();
 		for (size_t i = from; i < to; i++) {
 			const std::vector<T>& cur_row_left = left_m->get_row(i);
 			/*строку на все столбцы правой перемножаем, поочерЄдно записыва€ в €чейки результат*/
 			for (size_t j = 0; j < right_width; j++) {
-				std::vector<T> cur_column_right = right_m->get_column(j);
+				//std::vector<T> cur_column_right = right_m->get_column(j);
 				T res_val{};
-				for (size_t k = 0; k < cur_row_left.size(); k++) {
-					res_val += cur_row_left[k] * cur_column_right[k];
+				for (size_t k = 0; k < left_width/*cur_row_left.size()*/; k++) {
+					res_val += cur_row_left[k] * r_matrix_data[k][j];
 				}
-				std::vector<std::vector<T>>& data = res->get_data();
-				data[i][j] = res_val;
+				res_data[i][j] = res_val;
 			}
 		}
 		return;
@@ -68,10 +84,13 @@ namespace CalcFunctions {
 		size_t column_to = from_to.second;
 		T result{};
 		const std::vector<std::vector<T>>& m_data = matrix->get_data();
+		int init_sign = pow(-1, column_from);
 		for (size_t j = column_from; j < column_to; j++) {
 			T aij = m_data[0][j];
-			result += pow(-1, j)*aij*CalcFunctions::minor(matrix, 0, j); 
-			//0 - без первой строки, разложение по 1ой строке
+			result += /*pow(-1, j)*/init_sign*aij*CalcFunctions::minor(matrix, 0, j); /*ƒумал, возведение
+																					  в степень довольно долго,
+																					  может хоть так соптимизировать*/
+			init_sign = -init_sign;
 		}
 		return result;
 	};
