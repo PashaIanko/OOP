@@ -84,10 +84,10 @@ namespace CalcFunctions {
 		size_t column_to = from_to.second;
 		T result{};
 		const std::vector<std::vector<T>>& m_data = matrix->get_data();
-		int init_sign = pow(-1, column_from);
+		int init_sign = column_from % 2 == 0 ? 1 : -1;
 		for (size_t j = column_from; j < column_to; j++) {
 			T aij = m_data[0][j];
-			result += /*pow(-1, j)*/init_sign*aij*CalcFunctions::minor(matrix, 0, j); /*Думал, возведение
+			result += init_sign*aij*CalcFunctions::minor(matrix, 0, j); /*Думал, возведение
 																					  в степень довольно долго,
 																					  может хоть так соптимизировать*/
 			init_sign = -init_sign;
@@ -113,9 +113,14 @@ namespace CalcFunctions {
 		for (size_t i = 0; i < height; i++) {
 			if (i != line) {
 				std::vector<T>& result_data = result.get_row(result_rows_counter);
-				std::vector<T> matrix_data = matrix->get_row(i);
-				matrix_data.erase(matrix_data.begin() + column);
-				std::copy(matrix_data.begin(), matrix_data.end(), result_data.begin());
+				//std::vector<T> matrix_data = matrix->get_row(i);
+				//matrix_data.erase(matrix_data.begin() + column);
+				//std::copy(matrix_data.begin(), matrix_data.end(), result_data.begin());
+
+				const std::vector<T>& matrix_data = matrix->get_row(i);
+				std::copy(matrix_data.begin(), matrix_data.begin() + column, result_data.begin());
+				std::copy(matrix_data.begin() + column + 1, matrix_data.end(), result_data.begin() + column);
+
 				result_rows_counter++;
 			}
 		}
@@ -137,8 +142,10 @@ namespace CalcFunctions {
 				return (m_data[0][0] * m_data[1][1] - m_data[0][1] * m_data[1][0]);
 			}
 			else {
+				int sign = 1;
 				for (size_t j = 0; j < m_width; j++) {
-					result += m_data[0][j] * pow(-1, /*i+j i=0*/j)*CalcFunctions::minor(m, 0, j);
+					result += m_data[0][j] * sign *CalcFunctions::minor(m, 0, j);
+					sign = -sign;
 				}
 			}
 		}

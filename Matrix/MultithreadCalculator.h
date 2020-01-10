@@ -70,6 +70,8 @@ template<typename T>
 inline T MultithreadCalculator<T>::det
 (T(*calc_f)(std::pair<size_t, size_t>, const Matrix<T>* matrix))
 {
+	if (threads_numb == 0)
+		threads_numb = 1;
 	std::vector <std::pair<size_t, size_t>> line_interv = divide_matrix();
 	std::vector<std::future<T>> futures;
 	
@@ -89,7 +91,10 @@ inline Matrix<T> MultithreadCalculator<T>::calc
 (void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, const Matrix<T>* left_m, const Matrix<T>* right_m)) {
 	/*Ёто дл€ реализации умножени€, размеры результ матрицы мен€ютс€*/
 	
-	Matrix<T> res(left->get_height(), right->get_width());
+	Matrix<T> res(right->get_width(), left->get_height());
+
+	if (threads_numb == 0)
+		threads_numb = 1;
 	std::vector <std::pair<size_t, size_t>> line_interv = divide_matrix();
 	std::vector<std::future<void>> futures;
 	for (auto interval : line_interv) {
@@ -108,6 +113,10 @@ inline Matrix<T> MultithreadCalculator<T>::calc(
 	void(*calc_f)(std::pair<size_t, size_t>, Matrix<T>* res, const Matrix<T>* right_matrix))
 {
 	Matrix<T> res = *left;
+
+	if (threads_numb == 0)
+		threads_numb = 1;
+
 	std::vector <std::pair<size_t, size_t>> line_interv = divide_matrix();
 	std::vector<std::future<void>> futures;
 	for (auto interval : line_interv) {
@@ -123,9 +132,7 @@ inline Matrix<T> MultithreadCalculator<T>::calc(
 template<typename T>
 inline std::vector<std::pair<size_t, size_t>> MultithreadCalculator<T>::divide_matrix() const
 {
-	if (threads_numb == 0)
-		threads_numb == 1;
-	std::vector<std::pair<size_t, size_t>> result;
+	/*std::vector<std::pair<size_t, size_t>> result;
 	size_t numb_of_strings = left->get_height();
 	size_t strings_per_thread = (size_t)(numb_of_strings / threads_numb);
 
@@ -150,6 +157,23 @@ inline std::vector<std::pair<size_t, size_t>> MultithreadCalculator<T>::divide_m
 		from += strings_per_thread;
 	}
 	result[threads_numb - 1].second = numb_of_strings;
+	return result;*/
+
+
+	std::vector<std::pair<size_t, size_t>> result;
+	size_t numb_of_strings = left->get_height();
+	size_t strings_per_thread = (size_t)(numb_of_strings / threads_numb);
+
+	if (numb_of_strings % threads_numb != 0)
+		strings_per_thread++;
+
+	size_t from = 0;
+	while (from + strings_per_thread < numb_of_strings)
+	{
+		result.push_back({ from , from + strings_per_thread });
+		from += strings_per_thread;
+	}
+	result.push_back({ from , numb_of_strings });
 	return result;
 }
 

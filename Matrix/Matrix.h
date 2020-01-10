@@ -3,19 +3,20 @@
 #include <iostream>
 #include <algorithm>
 #include "MultithreadCalculator.h"
+#include <sstream>
 
 
-
+const double multithread_sum_optimization_parameter = 250; /*Результат исследования*/
+const double multithread_mult_optimization_parameter = 200; /*Результат исследования*/
+const double multithread_det_optimization_parameter = 1.5; /*Результат исследования*/
 
 template<typename T>
 class Matrix {
 public:
 	Matrix() = default;
-	Matrix(size_t width, size_t height);
+	
 	Matrix(const std::vector<std::vector<T>>& data);
-	Matrix(size_t width, size_t height, T& default_val);
-	Matrix(size_t width, size_t height, T&& default_val);
-
+	Matrix(size_t width, size_t height, T default_val = T{});
 
 	inline size_t get_width() const { return width; };
 	inline size_t get_height() const { return height; };
@@ -41,6 +42,12 @@ public:
 
 	Matrix<T>& operator=(const Matrix<T>& right);
 
+	Matrix<T> (const Matrix<T>& val) = default;
+	Matrix<T> (Matrix<T>&& val) = default;
+	//Matrix<T>& operator=(const Matrix<T>& val) = default;
+	Matrix<T>& operator=(Matrix<T>&& val) = default;
+
+
 	inline void enable_multithreading();
 	inline void disable_multithreading();
 	inline bool multithread_on() const { return enable_multithread; }
@@ -55,23 +62,11 @@ private:
 	
 	bool check_eq_size(const std::vector<std::vector<T>>& rows) const;
 	bool size_mismatch(const Matrix<T>& right) const;
-	void resize_rows(const size_t height, const size_t width);
+	void resize_rows(const size_t height, const size_t width, const T& val);
 
-	const double multithread_sum_optimization_parameter = 250; /*Результат исследования*/
-	const double multithread_mult_optimization_parameter = 200; /*Результат исследования*/
-	const double multithread_det_optimization_parameter = 1.5; /*Результат исследования*/
+
 	const size_t max_threads_limit = 5;
 };
-
-template<typename T>
-Matrix<T>::Matrix(size_t height_, size_t width_) : width(width_), height(height_) {
-	try {
-		resize_rows(height, width);
-	}
-	catch (...) {
-		std::cout << "bad alloc";
-	}
-}
 
 template<typename T>
 Matrix<T>::Matrix(const std::vector<std::vector<T>>& rows_) {
@@ -88,40 +83,19 @@ Matrix<T>::Matrix(const std::vector<std::vector<T>>& rows_) {
 		}
 	}
 	else {
-		//throw ?
+		throw std::bad_alloc();
 	}
 }
 
 template<typename T>
-inline Matrix<T>::Matrix(size_t width_, size_t height_, T & default_val) 
+inline Matrix<T>::Matrix(size_t width_, size_t height_, T default_val) 
 	: width(width_), height(height_)
 {
 	try {
-		resize_rows(height, width);
+		resize_rows(height, width, std::ref(default_val));
 	}
 	catch (...) {
-
-	}
-	for (size_t i = 0; i < rows.size(); i++) {
-		std::vector<T>& cur_row = rows[i];
-		std::fill(cur_row.begin(), cur_row.end(), default_val);
-	}
-}
-
-template<typename T>
-inline Matrix<T>::Matrix(size_t width_, size_t height_, T && default_val) 
-	: width(width_), height(height_)
-
-{
-	try {
-		resize_rows(height, width);
-	}
-	catch (...) {
-
-	}
-	for (size_t i = 0; i < rows.size(); i++) {
-		std::vector<T>& cur_row = rows[i];
-		std::fill(cur_row.begin(), cur_row.end(), default_val);
+		int v = 5;
 	}
 }
 
@@ -151,7 +125,9 @@ inline std::vector<T>& Matrix<T>::get_row(size_t idx) {
 		return rows[idx];
 	}
 	else {
-		//throw?
+		std::stringstream istr;
+		istr << "Out of range" << idx;
+		throw std::out_of_range(istr.str());
 	}
 }
 
@@ -161,7 +137,9 @@ inline const std::vector<T>& Matrix<T>::get_row(size_t idx) const {
 		return rows[idx];
 	}
 	else {
-		//throw?
+		std::stringstream istr;
+		istr << "Out of range" << idx;
+		throw std::out_of_range(istr.str());
 	}
 }
 
@@ -308,7 +286,6 @@ inline Matrix<T> Matrix<T>::multhread_subtract(const Matrix<T>* left, const Matr
 template<typename T>
 inline T Matrix<T>::multhread_det(size_t threads_numb) const {
 	if (width != height) {
-		//throw?
 		return T{};
 	}
 	MultithreadCalculator<T> calculator(this, threads_numb);
@@ -364,10 +341,10 @@ inline bool Matrix<T>::size_mismatch(const Matrix<T>& right) const
 }
 
 template<typename T>
-inline void Matrix<T>::resize_rows(const size_t height, const size_t width) {
+inline void Matrix<T>::resize_rows(const size_t height, const size_t width, const T& val) {
 	rows.resize(height);
 	for (size_t i = 0; i < rows.size(); ++i) {
-		rows[i].resize(width);
+		rows[i].resize(width, val);
 	}
 }
 

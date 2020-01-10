@@ -4,9 +4,6 @@
 #include "Matrix.h"
 #include <chrono>
 
-
-
-
 TEST(Ctor, init_list) {
 	Matrix<int> m
 	(
@@ -235,6 +232,14 @@ TEST(MULTITHREAD_MULT, 3_x_3_mult_3_x_2_identical_operator) {
 	EXPECT_TRUE(m_res == m2);
 }
 
+TEST(MULTITHREAD_MULT, 11_x_11) {
+	Matrix<int> m(11, 11, 1);
+	Matrix<int> expect(11, 11, 11);
+	
+	Matrix<int> m_res = m.multhread_multiply(&m, 6);
+	EXPECT_TRUE(m_res == expect);
+}
+
 TEST(MULTITHREAD_DET, 3_x_3_identical_operator) {
 	Matrix<int> m
 	(
@@ -390,7 +395,7 @@ TEST(OPERATOR_MULT, simple_test) {
 static Matrix<int> investigation_matrix_500(500, 500, 1);
 static Matrix<int> investigation_matrix_1000(1000, 1000, 1);
 static Matrix<int> investigation_matrix_5000(5000, 5000, 1);
-static Matrix<int> investigation_matrix_10000(10000, 10000, 1);
+//static Matrix<int> investigation_matrix_10000(10000, 10000, 1);
 static Matrix<int> investigation_matrix_250(250, 250, 1);
 static Matrix<int> investigation_matrix_100(100, 100, 1);
 
