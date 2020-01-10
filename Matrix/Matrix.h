@@ -41,10 +41,8 @@ public:
 	bool operator!=(const Matrix<T>& right) const;
 
 	Matrix<T>& operator=(const Matrix<T>& right);
-
 	Matrix<T> (const Matrix<T>& val) = default;
 	Matrix<T> (Matrix<T>&& val) = default;
-	//Matrix<T>& operator=(const Matrix<T>& val) = default;
 	Matrix<T>& operator=(Matrix<T>&& val) = default;
 
 
@@ -299,7 +297,7 @@ inline bool Matrix<T>::operator!=(const Matrix<T>& right) const {
 
 template<typename T>
 inline Matrix<T>& Matrix<T>::operator=(const Matrix<T>& right) {
-	if (*this != right) {
+	if (this != &right) {
 		height = right.get_height();
 		width = right.get_width();
 		rows = right.rows;
