@@ -8,12 +8,13 @@
 #include <string>
 #include <stack>
 
-class Controller : public QMainWindow
+class Controller : public QObject
 {
 	Q_OBJECT
 
 public:
-	Controller(QWidget *parent = Q_NULLPTR);
+	Controller();
+	void launch_GUI();
 
 public slots:
 	void DownloadImage();
@@ -27,4 +28,5 @@ private:
 
 private:
 	void set_model(const std::string&);
+	void connect_buttons();
 };

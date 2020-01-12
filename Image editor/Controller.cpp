@@ -1,14 +1,9 @@
 #include "Controller.h"
 #include "DownloadCmd.h"
 
-Controller:: Controller(QWidget *parent)
-	: QMainWindow(parent), GUI(new View), image(new Model)
+Controller:: Controller()
+	: GUI(new View), image(new Model)
 {
-	QPushButton* downld_button = new QPushButton("Download", this);
-	downld_button->setGeometry(QRect(QPoint(0, 0), QSize(100, 25)));
-	connect(downld_button, SIGNAL(clicked()), this, SLOT(DownloadImage()));
-	buttons.push_back(downld_button);
-
 	GUI->set_model(image);
 }
 
@@ -17,6 +12,16 @@ void Controller::DownloadImage() {
 	cmd_ptr->execute(image);
 }
 
+void Controller::launch_GUI() {
+	GUI->show();
+	connect_buttons();
+}
+
 void Controller::set_model(const std::string &dir) {
 	image->set_image(dir);
+}
+
+void Controller::connect_buttons(){
+	QPushButton* button = GUI->get_button();
+	connect(button, SIGNAL(clicked()), this, SLOT(DownloadImage()));
 }
