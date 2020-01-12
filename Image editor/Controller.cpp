@@ -14,14 +14,14 @@ void Controller::DownloadImage() {
 
 void Controller::launch_GUI() {
 	GUI->show();
-	connect_buttons();
+	connect_view_signals();
 }
+
 
 void Controller::set_model(const std::string &dir) {
 	image->set_image(dir);
 }
 
-void Controller::connect_buttons(){
-	QPushButton* button = GUI->get_button();
-	connect(button, SIGNAL(clicked()), this, SLOT(DownloadImage()));
+void Controller::connect_view_signals(){
+	connect(GUI.get(), SIGNAL(ButtonPushed()), this, SLOT(DownloadImage()));
 }

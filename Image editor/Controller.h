@@ -28,5 +28,5 @@ private:
 
 private:
 	void set_model(const std::string&);
-	void connect_buttons();
+	void connect_view_signals();
 };

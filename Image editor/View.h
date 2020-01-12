@@ -12,6 +12,12 @@ public:
 	void set_model(const std::shared_ptr<Model>& new_model);
 	QPushButton* get_button();
 
+public slots:
+	void DownloadButtonPushed();
+
+signals:
+	void ButtonPushed();
+
 private:
 	std::shared_ptr<Model> model;
 	QPushButton* download_button;
