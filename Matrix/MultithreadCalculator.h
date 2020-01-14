@@ -136,7 +136,7 @@ inline std::vector<std::pair<size_t, size_t>> MultithreadCalculator<T>::divide_m
 	size_t numb_of_strings = left->get_height();
 	size_t strings_per_thread = (size_t)(numb_of_strings / threads_numb);
 
-	if (numb_of_strings % threads_numb != 0)
+	if (strings_per_thread == 0 || numb_of_strings % threads_numb != 0)
 		strings_per_thread++;
 
 	size_t from = 0;

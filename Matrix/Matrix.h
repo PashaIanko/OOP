@@ -9,6 +9,7 @@
 const double multithread_sum_optimization_parameter = 250; /*Результат исследования*/
 const double multithread_mult_optimization_parameter = 200; /*Результат исследования*/
 const double multithread_det_optimization_parameter = 1.5; /*Результат исследования*/
+const size_t max_threads_limit = 5;
 
 template<typename T>
 class Matrix {
@@ -31,18 +32,24 @@ public:
 	Matrix<T> operator*(const Matrix<T>&right);
 	T det() const;
 
-	Matrix<T> multhread_sum(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb);
-	Matrix<T> multhread_multiply(const Matrix<T>* right, size_t threads_numb) const;
-	Matrix<T> multhread_subtract(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const;
+	Matrix<T> multhread_sum
+	(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const;
+
+	Matrix<T> multhread_multiply
+	(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const;
+	
+	Matrix<T> multhread_subtract
+	(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const;
+	
 	T multhread_det(size_t threads_numb) const;
 
 	bool operator==(const Matrix<T>& right) const;
 	bool operator==(const Matrix<T>&& right) const;
 	bool operator!=(const Matrix<T>& right) const;
 
-	Matrix<T>& operator=(const Matrix<T>& right);
-	Matrix<T> (const Matrix<T>& val) = default;
-	Matrix<T> (Matrix<T>&& val) = default;
+	Matrix<T>(Matrix<T>&& val) = default;
+	Matrix<T>(const Matrix<T>& val) = default;
+	Matrix<T>& operator=(const Matrix<T>& right) = default;
 	Matrix<T>& operator=(Matrix<T>&& val) = default;
 
 
@@ -63,7 +70,7 @@ private:
 	void resize_rows(const size_t height, const size_t width, const T& val);
 
 
-	const size_t max_threads_limit = 5;
+	
 };
 
 template<typename T>
@@ -189,7 +196,7 @@ inline Matrix<T> Matrix<T>::operator+(const Matrix<T>& right) {
 template<typename T>
 inline Matrix<T> Matrix<T>::operator*(const Matrix<T>& right) {
 	if (multithread_off() || right.multithread_off()) {
-		return multhread_multiply(&right, 1);
+		return multhread_multiply(this, &right, 1);
 	}
 	else {
 		/*Результаты исследования в екселе. Меджик намбер == 200,91. (Колво строк/меджик_набмер)
@@ -201,7 +208,7 @@ inline Matrix<T> Matrix<T>::operator*(const Matrix<T>& right) {
 		if (optimal_threads_numb > max_threads_limit)
 			optimal_threads_numb = max_threads_limit;
 		
-		return multhread_multiply(&right, optimal_threads_numb);
+		return multhread_multiply(this, &right, optimal_threads_numb);
 		
 	}
 
@@ -245,7 +252,7 @@ inline Matrix<T> Matrix<T>::operator-(const Matrix<T>& right) {
 
 
 template<typename T>
-inline Matrix<T> Matrix<T>::multhread_sum(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb)
+inline Matrix<T> Matrix<T>::multhread_sum(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const
 {
 	if (size_mismatch(*right)) {
 		return Matrix<T>();
@@ -258,13 +265,13 @@ inline Matrix<T> Matrix<T>::multhread_sum(const Matrix<T>* left, const Matrix<T>
 }
 
 template<typename T>
-inline Matrix<T> Matrix<T>::multhread_multiply(const Matrix<T>* right, size_t threads_numb) const
+inline Matrix<T> Matrix<T>::multhread_multiply(const Matrix<T>* left, const Matrix<T>* right, const size_t threads_numb) const
 {
 	if (get_width() != right->get_height()) {
 		return Matrix<T>();
 	}
 	else {
-		MultithreadCalculator<T> multiplier(this, right, threads_numb);
+		MultithreadCalculator<T> multiplier(left, right, threads_numb);
 		return multiplier.multiply();
 	}
 }
@@ -293,17 +300,6 @@ inline T Matrix<T>::multhread_det(size_t threads_numb) const {
 template<typename T>
 inline bool Matrix<T>::operator!=(const Matrix<T>& right) const {
 	return !(this->operator==(std::ref(right)));
-}
-
-template<typename T>
-inline Matrix<T>& Matrix<T>::operator=(const Matrix<T>& right) {
-	if (this != &right) {
-		height = right.get_height();
-		width = right.get_width();
-		rows = right.rows;
-		enable_multithread = right.enable_multithread;
-	}
-	return *this;
 }
 
 template<typename T>
