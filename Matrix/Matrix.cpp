@@ -65,7 +65,7 @@ TEST(MULTITHREAD_PLUS, simple_test) {
 
 	Matrix<int> m2 = m;
 
-	m = m.multhread_sum(&m, &m2, 2);
+	m = m.multhread_sum(&m2, 2);
 	
 	EXPECT_EQ(m.get_width(), 3);
 	EXPECT_EQ(m.get_height(), 2);
@@ -90,7 +90,7 @@ TEST(MULTITHREAD_PLUS, threads_more_than_strings) {
 		{-1, -2, -3},
 		}
 	);
-	m = m.multhread_sum(&m, &m2, 3);
+	m = m.multhread_sum(&m2, 3);
 
 	EXPECT_EQ(m.get_width(), 3);
 	EXPECT_EQ(m.get_height(), 1);
@@ -113,7 +113,7 @@ TEST(MULTITHREAD_PLUS, different_strings_numb_for_threads) {
 		}
 	);
 	Matrix<int> m2 = m;
-	m = m.multhread_sum(&m, &m2, 2);
+	m = m.multhread_sum(&m2, 2);
 
 	EXPECT_EQ(m.get_width(), 3);
 	EXPECT_EQ(m.get_height(), 5);
@@ -148,13 +148,13 @@ TEST(MULTITHREAD_MULT, simple_test) {
 		}
 	);
 
-	Matrix<int> m_res = m.multhread_multiply(&m, &m2, 1);
+	Matrix<int> m_res = m.multhread_multiply(&m2, 1);
 	EXPECT_TRUE(m_res == expect);
-	m_res = m.multhread_multiply(&m, &m2, 2);
+	m_res = m.multhread_multiply(&m2, 2);
 	EXPECT_TRUE(m_res == expect);
-	m_res = m.multhread_multiply(&m, &m2, 3);
+	m_res = m.multhread_multiply(&m2, 3);
 	EXPECT_TRUE(m_res == expect);
-	m_res = m.multhread_multiply(&m, &m2, 4);
+	m_res = m.multhread_multiply(&m2, 4);
 	EXPECT_TRUE(m_res == expect);
 }
 
@@ -176,7 +176,7 @@ TEST(MULTITHREAD_MULT, 3_x_3_identical_operator) {
 		}
 	);
 
-	Matrix<int> m_res = m.multhread_multiply(&m, &m2, 3);
+	Matrix<int> m_res = m.multhread_multiply(&m2, 3);
 	EXPECT_TRUE(m_res == m);
 }
 
@@ -198,11 +198,11 @@ TEST(MULTITHREAD_MULT, 3_x_3_mult_3_x_7_identical_operator) {
 		}
 	);
 
-	Matrix<int> m_res = m.multhread_multiply(&m, &m2, 3);
+	Matrix<int> m_res = m.multhread_multiply(&m2, 3);
 	EXPECT_TRUE(m_res == m2);
-	m_res = m.multhread_multiply(&m, &m2, 2);
+	m_res = m.multhread_multiply(&m2, 2);
 	EXPECT_TRUE(m_res == m2);
-	m_res = m.multhread_multiply(&m, &m2, 1);
+	m_res = m.multhread_multiply(&m2, 1);
 	EXPECT_TRUE(m_res == m2);
 }
 
@@ -224,11 +224,11 @@ TEST(MULTITHREAD_MULT, 3_x_3_mult_3_x_2_identical_operator) {
 		}
 	);
 
-	Matrix<int> m_res = m.multhread_multiply(&m, &m2, 3);
+	Matrix<int> m_res = m.multhread_multiply(&m2, 3);
 	EXPECT_TRUE(m_res == m2);
-	m_res = m.multhread_multiply(&m, &m2, 2);
+	m_res = m.multhread_multiply(&m2, 2);
 	EXPECT_TRUE(m_res == m2);
-	m_res = m.multhread_multiply(&m, &m2, 1);
+	m_res = m.multhread_multiply(&m2, 1);
 	EXPECT_TRUE(m_res == m2);
 }
 
@@ -236,7 +236,7 @@ TEST(MULTITHREAD_MULT, 11_x_11) {
 	Matrix<int> m(11, 11, 1);
 	Matrix<int> expect(11, 11, 11);
 	
-	Matrix<int> m_res = m.multhread_multiply(&m, &m, 6);
+	Matrix<int> m_res = m.multhread_multiply(&m, 6);
 	EXPECT_TRUE(m_res == expect);
 }
 
@@ -425,7 +425,7 @@ len_result<T> investigate_det(const Matrix<T>* matrix, size_t threads_numb)
 template<typename T>
 std::chrono::duration<double> investigate_sum(Matrix<T>* matrix, size_t threads_numb) {
 	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-	Matrix<T> m = matrix->multhread_sum(matrix, matrix, threads_numb);
+	Matrix<T> m = matrix->multhread_sum(matrix, threads_numb);
 	std::chrono::duration<double> dur = std::chrono::system_clock::now() - start;
 	std::cout << "Investigation matrix[" << matrix->get_height()
 		<< "][" << matrix->get_width() << "], "
@@ -439,7 +439,7 @@ template<typename T>
 std::chrono::duration<double> investigate_mult(Matrix<T>* matrix_, size_t threads_numb) {
 	Matrix<T> matrix = *matrix_;
 	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-	Matrix<T> m = matrix.multhread_multiply(&matrix, matrix_, threads_numb); 
+	Matrix<T> m = matrix.multhread_multiply(matrix_, threads_numb); 
 	std::chrono::duration<double> dur = std::chrono::system_clock::now() - start;
 	std::cout << "Investigation matrix[" << matrix.get_height()
 		<< "][" << matrix.get_width() << "], "
