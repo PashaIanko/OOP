@@ -9,7 +9,7 @@
 const double multithread_sum_optimization_parameter = 250; /*Результат исследования*/
 const double multithread_mult_optimization_parameter = 200; /*Результат исследования*/
 const double multithread_det_optimization_parameter = 1.5; /*Результат исследования*/
-const size_t max_threads_limit = 5;
+
 
 template<typename T>
 class Matrix {
@@ -19,14 +19,6 @@ public:
 	Matrix(const std::vector<std::vector<T>>& data);
 	Matrix(size_t width, size_t height, T default_val = T{});
 
-	inline size_t get_width() const { return width; };
-	inline size_t get_height() const { return height; };
-	std::vector<T>& get_row(size_t idx);
-	const std::vector<T>& get_row(size_t idx) const;
-	const std::vector<T> get_column(size_t idx) const;
-	inline std::vector<std::vector<T>>& get_data();
-	inline const std::vector<std::vector<T>>& get_data() const;
-	
 	Matrix<T> operator+(const Matrix<T>&right);
 	Matrix<T> operator-(const Matrix<T>&right);
 	Matrix<T> operator*(const Matrix<T>&right);
@@ -57,20 +49,26 @@ public:
 	inline void disable_multithreading();
 	inline bool multithread_on() const { return enable_multithread; }
 	inline bool multithread_off()const { return !enable_multithread; }
+	inline void set_threads_limit(size_t threads_numb);
+
+	inline size_t get_width() const { return width; };
+	inline size_t get_height() const { return height; };
+	std::vector<T>& get_row(size_t idx);
+	const std::vector<T>& get_row(size_t idx) const;
+	const std::vector<T> get_column(size_t idx) const;
+	inline std::vector<std::vector<T>>& get_data();
+	inline const std::vector<std::vector<T>>& get_data() const;
 
 private:
 	size_t height = 0;
 	size_t width = 0;
 	std::vector<std::vector<T>> rows{};
 	bool enable_multithread = false;
-	
-	
 	bool check_eq_size(const std::vector<std::vector<T>>& rows) const;
 	bool size_mismatch(const Matrix<T>& right) const;
 	void resize_rows(const size_t height, const size_t width, const T& val);
+	size_t max_threads_limit = 5;
 
-
-	
 };
 
 template<typename T>
@@ -310,6 +308,11 @@ inline void Matrix<T>::enable_multithreading() {
 template<typename T>
 inline void Matrix<T>::disable_multithreading() {
 	enable_multithread = false;
+}
+
+template<typename T>
+inline void Matrix<T>::set_threads_limit(size_t threads_numb) {
+	max_threads_limit = threads_numb;
 }
 
 template<typename T>

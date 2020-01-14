@@ -361,30 +361,26 @@ TEST(OPERATOR_MULT, simple_test) {
 	EXPECT_EQ(m_res, m_exp);
 }
 
-
-/*TEST(MULTITHREAD_DET, 10_x_10) {
+TEST(MULTITHREAD_DET, 5_x_5_strings_more_than_threads) {
 	Matrix<int> m
 	(
 		{
-		{1, 4, 5, 10, -3, 2, 1, 1, 1, 1},
-		{1, 1, 1, 1, 4, 5, 6, 7, 9, 0},
-		{3, 4, 4, 4, 4, 5, 6, 8, 0, 0},
-		{2, 1, 7, 6, 8, 9, 10, 3, 2, 1},
-		{2, 1, 3, 5, 7, 8, 4, 4, 4, 4},
-		{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-		{2, 1, 4, 3, 6, 7, 7, 2, 4, 25},
-		{1, 4, 2, 3, 5, 6, 2, 1, 8, 9},
-		{0, 1, 5, 3, 2, 6, 5, 4, 7, 8},
-		{1, 4, 5, 2, 0, 9, 10, 7, 8, 2}
+		{1, 4, 5, 1, 3 },
+		{1, 1, 1, 1, 4 },
+		{3, 4, 4, 4, 4 },
+		{2, 1, 7, 6, 8 },
+		{2, 1, 3, 5, 7 },
 		}
 	);
-	int res = -5208;
-	EXPECT_EQ(CalcFunctions::simple_det(&m), res);
-	//EXPECT_EQ(m.multhread_det(4), res);
-	//EXPECT_EQ(m.multhread_det(3), res);
-	//EXPECT_EQ(m.multhread_det(2), res);
-	//EXPECT_EQ(m.multhread_det(1), res);
-}*/
+	int res = 195;
+	//EXPECT_EQ(m.multhread_det(8), res);
+	//EXPECT_EQ(m.multhread_det(7), res);
+	//EXPECT_EQ(m.multhread_det(6), res);
+	//EXPECT_EQ(m.multhread_det(5), res);
+	EXPECT_EQ(m.multhread_det(4), res);
+	EXPECT_EQ(m.multhread_det(3), res);
+	EXPECT_EQ(m.multhread_det(2), res);
+}
 
 
 
