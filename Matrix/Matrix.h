@@ -6,9 +6,9 @@
 #include <sstream>
 
 
-const double multithread_sum_optimization_parameter = 250; /*Результат исследования*/
-const double multithread_mult_optimization_parameter = 200; /*Результат исследования*/
-const double multithread_det_optimization_parameter = 1.5; /*Результат исследования*/
+const size_t multithread_sum_optimization_parameter = 250; /*Результат исследования*/
+const size_t multithread_mult_optimization_parameter = 200; /*Результат исследования*/
+const size_t multithread_det_optimization_parameter = 2; /*Результат исследования*/
 
 
 template<typename T>
@@ -67,8 +67,8 @@ private:
 	bool check_eq_size(const std::vector<std::vector<T>>& rows) const;
 	bool size_mismatch(const Matrix<T>& right) const;
 	void resize_rows(const size_t height, const size_t width, const T& val);
-	size_t max_threads_limit = 5;
-
+	bool matrix_equality_check(const Matrix<T>&) const;
+	size_t max_threads_limit = std::thread::hardware_concurrency();
 };
 
 template<typename T>
@@ -104,22 +104,12 @@ inline Matrix<T>::Matrix(size_t width_, size_t height_, T default_val)
 
 template<typename T>
 bool Matrix<T>::operator==(const Matrix<T>& right) const {
-	if (size_mismatch(right)) {
-		return false;
-	}
-	for (size_t i = 0; i < get_height(); i++)
-	{
-		bool if_eq = rows[i] == right.get_row(i);
-		if (if_eq == false)
-			return false;
-	}
-	return true;
+	return matrix_equality_check(right);
 }
 
 template<typename T>
-inline bool Matrix<T>::operator==(const Matrix<T>&& right) const
-{
-	return false;
+inline bool Matrix<T>::operator==(const Matrix<T>&& right) const {
+	return matrix_equality_check(std::move(right));
 }
 
 template<typename T>
@@ -172,39 +162,58 @@ inline const std::vector<std::vector<T>>& Matrix<T>::get_data() const {
 
 template<typename T>
 inline Matrix<T> Matrix<T>::operator+(const Matrix<T>& right) {
-	if (multithread_off() || right.multithread_off()) {
+	if (multithread_off() && right.multithread_off()) {
 		return multhread_sum(&right, 1);
 	}
 	else {
 		/*Результаты исследования в екселе. Меджик намбер == 250,91. (Колво строк/меджик_набмер)
 		== оптимальное кол-во потоков + позаботиться, чтобы оно не превышало оговорённый порог (~5 потоков)*/
-		size_t optimal_threads_numb = (size_t)
+		/*size_t optimal_threads_numb = (size_t)
 			(right.get_height() / multithread_sum_optimization_parameter);
 		if (optimal_threads_numb == 0)
 			optimal_threads_numb = 1;
 		if (optimal_threads_numb > max_threads_limit)
-			optimal_threads_numb = max_threads_limit;
-		
+			optimal_threads_numb = max_threads_limit;*/
+
+
+		size_t optimal_threads_numb =
+			right.get_height() / multithread_sum_optimization_parameter;
+
+		if (optimal_threads_numb == 0 ||
+			right.get_height() % multithread_sum_optimization_parameter != 0) {
+			optimal_threads_numb++;
+		}
+		optimal_threads_numb = std::min(optimal_threads_numb, max_threads_limit);
 		return multhread_sum(&right, optimal_threads_numb);
-		
 	}
 	
 }
 
 template<typename T>
 inline Matrix<T> Matrix<T>::operator*(const Matrix<T>& right) {
-	if (multithread_off() || right.multithread_off()) {
+	if (multithread_off() && right.multithread_off()) {
 		return multhread_multiply(&right, 1);
 	}
 	else {
 		/*Результаты исследования в екселе. Меджик намбер == 200,91. (Колво строк/меджик_набмер)
 		== оптимальное кол-во потоков + позаботиться, чтобы оно не превышало оговорённый порог (~5 потоков)*/
-		size_t optimal_threads_numb = (size_t)
+	/*	size_t optimal_threads_numb = (size_t)
 			(right.get_height() / multithread_mult_optimization_parameter);
 		if (optimal_threads_numb == 0)
 			optimal_threads_numb = 1;
 		if (optimal_threads_numb > max_threads_limit)
-			optimal_threads_numb = max_threads_limit;
+			optimal_threads_numb = max_threads_limit;*/
+
+
+		size_t optimal_threads_numb =
+			right.get_height() / multithread_sum_optimization_parameter;
+
+		if (optimal_threads_numb == 0 ||
+			right.get_height() % multithread_mult_optimization_parameter != 0) {
+			optimal_threads_numb++;
+		}
+		optimal_threads_numb = std::min(optimal_threads_numb, max_threads_limit);
+
 		
 		return multhread_multiply(&right, optimal_threads_numb);
 		
@@ -231,18 +240,28 @@ inline T Matrix<T>::det() const {
 
 template<typename T>
 inline Matrix<T> Matrix<T>::operator-(const Matrix<T>& right) {
-	if (enable_multithread == false) {
+	if (multithread_off() && right.multithread_off()) {
 		return multhread_subtract(&right, 1);
 	}
 	else {
 		/*Результаты исследования в екселе. Меджик намбер == 250,91. (Колво строк/меджик_набмер)
 		== оптимальное кол-во потоков + позаботиться, чтобы оно не превышало оговорённый порог (~5 потоков)*/
-		size_t optimal_threads_numb = (size_t)
+		/*size_t optimal_threads_numb = (size_t)
 			(right.get_height() / multithread_sum_optimization_parameter);
 		if (optimal_threads_numb == 0)
 			optimal_threads_numb = 1;
 		if (optimal_threads_numb > max_threads_limit)
-			optimal_threads_numb = max_threads_limit;
+			optimal_threads_numb = max_threads_limit;*/
+
+		size_t optimal_threads_numb = 
+			right.get_height() / multithread_sum_optimization_parameter;
+
+		if (optimal_threads_numb == 0 ||
+			right.get_height() % multithread_sum_optimization_parameter != 0) {
+			optimal_threads_numb++;
+		}
+		optimal_threads_numb = std::min(optimal_threads_numb, max_threads_limit);
+
 		return multhread_subtract(&right, optimal_threads_numb);
 		
 	}
@@ -297,7 +316,7 @@ inline T Matrix<T>::multhread_det(size_t threads_numb) const {
 
 template<typename T>
 inline bool Matrix<T>::operator!=(const Matrix<T>& right) const {
-	return !(this->operator==(std::ref(right)));
+	return !(this->operator==(right));
 }
 
 template<typename T>
@@ -343,6 +362,20 @@ inline void Matrix<T>::resize_rows(const size_t height, const size_t width, cons
 	for (size_t i = 0; i < rows.size(); ++i) {
 		rows[i].resize(width, val);
 	}
+}
+
+template<typename T>
+inline bool Matrix<T>::matrix_equality_check(const Matrix<T>& right) const {
+	if (size_mismatch(right)) {
+		return false;
+	}
+	for (size_t i = 0; i < get_height(); i++)
+	{
+		bool if_eq = rows[i] == right.get_row(i);
+		if (if_eq == false)
+			return false;
+	}
+	return true;
 }
 
 
