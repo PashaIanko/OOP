@@ -41,9 +41,9 @@ void GUI::DownloadButtonPushed() {
 	emit Download();
 }
 
-void GUI::BlurValueChanged(int) {
+/*void GUI::BlurValueChanged(int) {
 	int v = 5;
-}
+}*/
 
 
 void GUI::BlurButtonPushed() {

@@ -18,7 +18,7 @@ public:
 public slots:
 	void DownloadButtonPushed();
 	void BlurButtonPushed();
-	void BlurValueChanged(int value);
+	//void BlurValueChanged(int value);
 
 signals: /*signals for controller*/
 	void Download();
