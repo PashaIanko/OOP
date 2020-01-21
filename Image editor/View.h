@@ -10,7 +10,7 @@ class View : public QMainWindow {
 public:
 	View(QWidget *parent = Q_NULLPTR);
 	void set_model(const std::shared_ptr<Model>& new_model);
-	QPushButton* get_button();
+	void update();
 
 public slots:
 	void DownloadButtonPushed();
@@ -20,5 +20,5 @@ signals:
 
 private:
 	std::shared_ptr<Model> model;
-	QPushButton* download_button;
+	std::vector<QPushButton*> buttons;
 };
