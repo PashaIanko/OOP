@@ -2,7 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QPushButton>
-#include "View.h"
+#include "GUI.h"
 #include "Command.h"
 #include <vector>
 #include <string>
@@ -20,13 +20,13 @@ public slots:
 	void DownloadImage();
 
 private:
-	std::vector<QPushButton*> buttons{};
-	std::shared_ptr<View> GUI;
+	std::shared_ptr<GUI> gui;
 	std::shared_ptr<Model> image;
+	
 	std::stack<Command> redo_list;
 	std::stack<Command> undo_list;
 
 private:
 	void set_model(const std::string&);
-	void connect_view_signals();
+	void connect_gui_signals();
 };

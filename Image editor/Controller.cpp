@@ -1,24 +1,21 @@
 #include "Controller.h"
 #include "DownloadCmd.h"
 #include <opencv2/core/types_c.h>
-//#include <cv.h>
+
 
 Controller:: Controller()
-	: GUI(new View), image(new Model)
-{
-	GUI->set_model(image);
+	: gui(new GUI), image(new Model) {
 }
 
 void Controller::DownloadImage() {
 	std::shared_ptr<Command> cmd_ptr = std::make_shared<DownloadCmd>();
 	cmd_ptr->execute(image);
-	GUI->update();
+	image->update_view();
 }
 
 void Controller::launch_GUI() {
-	GUI->show();
-	cv::namedWindow("Your Image");
-	connect_view_signals();
+	gui->show();
+	connect_gui_signals();
 }
 
 
@@ -26,6 +23,6 @@ void Controller::set_model(const std::string &dir) {
 	image->set_image(dir);
 }
 
-void Controller::connect_view_signals(){
-	connect(GUI.get(), SIGNAL(ButtonPushed()), this, SLOT(DownloadImage()));
+void Controller::connect_gui_signals(){
+	connect(gui.get(), SIGNAL(ButtonPushed()), this, SLOT(DownloadImage()));
 }
