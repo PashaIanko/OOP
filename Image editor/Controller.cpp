@@ -1,5 +1,6 @@
 #include "Controller.h"
 #include "DownloadCmd.h"
+#include "BlurCmd.h"
 #include <opencv2/core/types_c.h>
 
 
@@ -10,7 +11,6 @@ Controller:: Controller()
 void Controller::DownloadImage() {
 	std::shared_ptr<Command> cmd_ptr = std::make_shared<DownloadCmd>();
 	cmd_ptr->execute(image);
-	image->update_view();
 }
 
 void Controller::launch_GUI() {
@@ -18,11 +18,14 @@ void Controller::launch_GUI() {
 	connect_gui_signals();
 }
 
-
-void Controller::set_model(const std::string &dir) {
-	image->set_image(dir);
+void Controller::ApplyBlurFilter() {
+	std::shared_ptr<Command> cmd_ptr = std::make_shared<BlurCmd>(cv::Size(5, 5));
+	cmd_ptr->execute(image);
 }
 
+
+
 void Controller::connect_gui_signals(){
-	connect(gui.get(), SIGNAL(ButtonPushed()), this, SLOT(DownloadImage()));
+	connect(gui.get(), SIGNAL(Download()), this, SLOT(DownloadImage()));
+	connect(gui.get(), SIGNAL(Blur()), this, SLOT(ApplyBlurFilter()));
 }

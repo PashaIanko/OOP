@@ -18,6 +18,7 @@ public:
 
 public slots:
 	void DownloadImage();
+	void ApplyBlurFilter();
 
 private:
 	std::shared_ptr<GUI> gui;
@@ -27,6 +28,5 @@ private:
 	std::stack<Command> undo_list;
 
 private:
-	void set_model(const std::string&);
 	void connect_gui_signals();
 };
