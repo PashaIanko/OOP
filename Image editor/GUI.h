@@ -2,10 +2,13 @@
 #include "Model.h"
 #include <QtWidgets/QMainWindow>
 #include <QPushButton>
-
 #include <QSlider>
 #include <QHBoxLayout>
 #include <QSpinBox>
+#include "ButtonCreator.h"
+#include "SliderCreator.h"
+
+
 
 
 class GUI : public QMainWindow {
@@ -28,5 +31,6 @@ signals: /*signals for controller*/
 private:
 	std::vector<QPushButton*> buttons;
 	std::vector<QSlider*> sliders;
-	
+	ButtonCreator button_creator;
+	SliderCreator slider_creator;
 };

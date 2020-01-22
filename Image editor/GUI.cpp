@@ -1,29 +1,26 @@
 #include "GUI.h"
 #include "Controller.h"
 #include <QLabel>
+#include "UtilStructs.h"
 
 GUI::GUI(QWidget * parent) {
 	resize(200, 400);
-	QPushButton* download_button = new QPushButton("Download", this);
-	download_button->setGeometry(QRect(QPoint(0, 0), QSize(100, 25)));
+
+	QPushButton* download_button = dynamic_cast<QPushButton*>
+		( button_creator.create_object (
+			{this, "Download Image", QRect(QPoint(0, 0), QSize(100, 25)) }
+		  )
+		);
 	connect(download_button, SIGNAL(clicked()), this, SLOT(DownloadButtonPushed()));
-
-	buttons.push_back(download_button);
-
-
-	QPushButton* download_button_ = new QPushButton("Blur", this);
-	download_button->setGeometry(QRect(QPoint(0, 150), QSize(100, 25)));
-	connect(download_button_, SIGNAL(clicked()), this, SLOT(BlurButtonPushed()));
-
-
+	
 
 	QSpinBox *spinner = new QSpinBox(this);
 	spinner->setRange(0, 9);
-	QSlider *slider = new QSlider(Qt::Horizontal, this);
-	slider->setSliderPosition(0);
-	slider->setRange(0, 9);
 	spinner->setValue(0);
-	slider->setValue(0);
+	QSlider* slider = dynamic_cast<QSlider*> (slider_creator.create_object
+	(
+		{ Qt::Horizontal, this, 0, {0, 9} }
+	));
 
 	connect(spinner, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
 	connect(slider, SIGNAL(valueChanged(int)), spinner, SLOT(setValue(int)));
