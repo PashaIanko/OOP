@@ -14,27 +14,25 @@ GUI::GUI(QWidget * parent) {
 	connect(download_button, SIGNAL(clicked()), this, SLOT(DownloadButtonPushed()));
 	
 
-	QSpinBox *spinner = new QSpinBox(this);
-	spinner->setRange(0, 9);
-	spinner->setValue(0);
-	QSlider* slider = dynamic_cast<QSlider*> (slider_creator.create_object
-	(
-		{ Qt::Horizontal, this, 0, {0, 9} }
+	QSpinBox* spinner = dynamic_cast<QSpinBox*>(spinbox_creator.create_object (
+		{ this, 0, {0,9} }
 	));
 
-	connect(spinner, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
-	connect(slider, SIGNAL(valueChanged(int)), spinner, SLOT(setValue(int)));
-	connect(spinner, SIGNAL(valueChanged(int)), this, SLOT(BlurLevelSet_(int)));
+	QSlider* slider = dynamic_cast<QSlider*> (slider_creator.create_object
+	(
+		{ Qt::Horizontal, this, 0, {0,9} }
+	));
+
+	connect(spinner,	SIGNAL(valueChanged(int)), slider,	SLOT(setValue(int)));
+	connect(slider,		SIGNAL(valueChanged(int)), spinner, SLOT(setValue(int)));
+	connect(spinner,	SIGNAL(valueChanged(int)), this,	SLOT(BlurLevelSet_(int)));
 
 	
-	QHBoxLayout *layout = new QHBoxLayout(this);
-	layout->addWidget(slider);
-	layout->addWidget(spinner);
+	QHBoxLayout* layout = layout_creator.create_object
+	({ this, {slider, spinner} });
 	
-	QWidget* layout_win = new QWidget(this);
-	layout_win->setGeometry(QRect(QPoint(0, 200), QSize(200, 100)));
-	layout_win->setLayout(layout);
-	layout_win->move(QPoint(0, 250));
+	QWidget* layout_win = qwidget_creator.create_object
+	({this, QRect(QPoint(0, 200), QSize(200, 100)), layout, QPoint(0,250) });
 
 	
 }
