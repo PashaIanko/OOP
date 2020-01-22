@@ -9,12 +9,16 @@ void Model::download_image(const std::string & dir) {
 	initial_image = image.clone();
 }
 
-Model & Model::operator=(const cv::Mat & image_) {
-	this->image = image_;
-	return *this;
-}
+//Model & Model::operator=(const cv::Mat & image_) {
+//	this->image = image_;
+//	return *this;
+//}
 
 const cv::Mat & Model::get_image() const {
+	return image;
+}
+
+cv::Mat & Model::get_image() {
 	return image;
 }
 

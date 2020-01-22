@@ -25,10 +25,9 @@ GUI::GUI(QWidget * parent) {
 	spinner->setValue(0);
 	slider->setValue(0);
 
-	//connect(spinner, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
-	//connect(slider, SIGNAL(valueChanged(int)), spinner, SLOT(setValue(int)));
+	connect(spinner, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
+	connect(slider, SIGNAL(valueChanged(int)), spinner, SLOT(setValue(int)));
 	connect(spinner, SIGNAL(valueChanged(int)), this, SLOT(BlurLevelSet_(int)));
-	//connect(spinner, SIGNAL(valueChanged(int)), this, SLOT(BlurLevelSet(int)));
 
 	
 	QHBoxLayout *layout = new QHBoxLayout(this);
