@@ -1,7 +1,7 @@
 #include "Model.h"
 
 Model::Model() {
-	cv::namedWindow("Your Image");
+	cv::namedWindow(view_window_name);
 }
 
 void Model::download_image(const std::string & dir) {
@@ -25,6 +25,11 @@ const cv::Mat & Model::get_initial_image() const {
 	return initial_image;
 }
 
-void Model::update_view() {
-	cv::imshow("Your Image", image);
+void Model::update_view() const {
+	if(image_is_valid())
+		cv::imshow(view_window_name, image);
+}
+
+inline bool Model::image_is_valid() const {
+	return image.size != 0 && image.data != nullptr;
 }

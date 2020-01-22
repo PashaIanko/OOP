@@ -8,5 +8,4 @@ void DownloadCmd::execute(std::shared_ptr<Model>& image) {
 }
 
 void DownloadCmd::unexecute(std::shared_ptr<Model>&) {
-
 }

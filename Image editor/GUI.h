@@ -32,6 +32,7 @@ signals: /*signals for controller*/
 
 private:
 	std::vector<QObject*> objects;
+	void create_controllers();
 
 	ButtonCreator button_creator;
 	SliderCreator slider_creator;

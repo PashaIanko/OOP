@@ -20,12 +20,12 @@ void Controller::launch_GUI() {
 }
 
 void Controller::SaveImage() {
-	std::shared_ptr<Command> cmd_ptr = std::make_shared<SaveCmd>("/Result.jpg");
+	std::shared_ptr<Command> cmd_ptr = std::make_shared<SaveCmd>(result_image_name);
 	cmd_ptr->execute(image);
 }
 
-void Controller::Apply(int level) {
-	std::shared_ptr<Command> cmd_ptr = std::make_shared<BlurCmd>(level);
+void Controller::BlurFilterImage(int blur_intensity) {
+	std::shared_ptr<Command> cmd_ptr = std::make_shared<BlurCmd>(blur_intensity);
 	cmd_ptr->execute(image);
 }
 
@@ -34,6 +34,6 @@ void Controller::Apply(int level) {
 void Controller::connect_gui_signals(){
 
 	connect(gui.get(), SIGNAL(Download()), this, SLOT(DownloadImage()));
-	connect(gui.get(), SIGNAL(BlurLevel(int)), this, SLOT(Apply(int)));
+	connect(gui.get(), SIGNAL(BlurLevel(int)), this, SLOT(BlurFilterImage(int)));
 	connect(gui.get(), SIGNAL(Save()), this, SLOT(SaveImage()));
 }

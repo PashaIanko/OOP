@@ -35,3 +35,5 @@ struct LayOutParams {
 	QMainWindow* parent;
 	std::vector<QWidget*> widgets;
 };
+
+

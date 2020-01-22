@@ -19,15 +19,14 @@ public:
 public slots:
 	void DownloadImage();
 	void SaveImage();
-	void Apply(int level);
+	void BlurFilterImage(int blur_intensity);
 
 private:
 	std::shared_ptr<GUI> gui;
 	std::shared_ptr<Model> image;
-	
 	std::stack<Command> redo_list;
 	std::stack<Command> undo_list;
-
+	const QString result_image_name{ "/Result.jpg" };
 private:
 	void connect_gui_signals();
 };
