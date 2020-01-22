@@ -18,11 +18,12 @@ public:
 public slots:
 	void DownloadButtonPushed();
 	void BlurButtonPushed();
-	//void BlurValueChanged(int value);
+	void BlurLevelSet_(int value);
 
 signals: /*signals for controller*/
 	void Download();
 	void Blur();
+	void BlurLevel(int value);
 
 private:
 	std::vector<QPushButton*> buttons;

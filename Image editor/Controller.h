@@ -19,6 +19,7 @@ public:
 public slots:
 	void DownloadImage();
 	void ApplyBlurFilter();
+	void Apply(int level);
 
 private:
 	std::shared_ptr<GUI> gui;

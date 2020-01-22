@@ -18,15 +18,19 @@ GUI::GUI(QWidget * parent) {
 
 
 	QSpinBox *spinner = new QSpinBox(this);
-	spinner->setRange(1, 10);
+	spinner->setRange(0, 9);
 	QSlider *slider = new QSlider(Qt::Horizontal, this);
-	slider->setSliderPosition(5);
-	slider->setRange(1, 10);
+	slider->setSliderPosition(0);
+	slider->setRange(0, 9);
+	spinner->setValue(0);
+	slider->setValue(0);
 
-	connect(spinner, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
-	connect(slider, SIGNAL(valueChanged(int)), spinner, SLOT(setValue(int)));
+	//connect(spinner, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
+	//connect(slider, SIGNAL(valueChanged(int)), spinner, SLOT(setValue(int)));
+	connect(spinner, SIGNAL(valueChanged(int)), this, SLOT(BlurLevelSet_(int)));
+	//connect(spinner, SIGNAL(valueChanged(int)), this, SLOT(BlurLevelSet(int)));
 
-	spinner->setValue(5);
+	
 	QHBoxLayout *layout = new QHBoxLayout(this);
 	layout->addWidget(slider);
 	layout->addWidget(spinner);
@@ -35,17 +39,18 @@ GUI::GUI(QWidget * parent) {
 	layout_win->setGeometry(QRect(QPoint(0, 200), QSize(200, 100)));
 	layout_win->setLayout(layout);
 	layout_win->move(QPoint(0, 250));
+
+	
 }
 
 void GUI::DownloadButtonPushed() {
 	emit Download();
 }
 
-/*void GUI::BlurValueChanged(int) {
-	int v = 5;
-}*/
-
-
 void GUI::BlurButtonPushed() {
 	emit Blur();
+}
+
+void GUI::BlurLevelSet_(int value) {
+	emit BlurLevel(value);
 }

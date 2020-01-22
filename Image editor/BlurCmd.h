@@ -4,10 +4,10 @@
 class BlurCmd : public Command {
 public:
 	BlurCmd() = delete;
-	BlurCmd(const cv::Size& kernel_block_size_);
+	BlurCmd(const int blur_intensity);
 	void execute(std::shared_ptr<Model>&) override;
 	void unexecute(std::shared_ptr<Model>&) override;
 
 private:
-	cv::Size kernel_block_size{};
+	int blur_intensity;
 };
