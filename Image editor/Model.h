@@ -7,11 +7,13 @@ class Model {
 public:
 	Model();
 	void download_image(const std::string& dir);
-	//Model& operator=(const cv::Mat& image);
+	void save_image(const std::string& dir);
+
 	const cv::Mat& get_image() const;
 	cv::Mat& get_image();
 	const cv::Mat& get_initial_image() const;
 	void update_view();
+
 
 private:
 	cv::Mat image;

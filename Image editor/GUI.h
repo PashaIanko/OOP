@@ -19,20 +19,19 @@ class GUI : public QMainWindow {
 
 public:
 	GUI(QWidget *parent = Q_NULLPTR);
-
+	~GUI();
 public slots:
 	void DownloadButtonPushed();
-	void BlurButtonPushed();
-	void BlurLevelSet_(int value);
+	void SaveButtonPushed();
+	void BlurLevelSet(int value);
 
 signals: /*signals for controller*/
 	void Download();
-	void Blur();
 	void BlurLevel(int value);
+	void Save();
 
 private:
-	std::vector<QPushButton*> buttons;
-	std::vector<QSlider*> sliders;
+	std::vector<QObject*> objects;
 
 	ButtonCreator button_creator;
 	SliderCreator slider_creator;

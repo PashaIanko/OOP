@@ -18,7 +18,7 @@ public:
 
 public slots:
 	void DownloadImage();
-	void ApplyBlurFilter();
+	void SaveImage();
 	void Apply(int level);
 
 private:
